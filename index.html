@@ -3,50 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgendAI — Agendamento Inteligente para Salões</title>
-    <meta name="description" content="Sistema de agendamento online para salões de beleza e barbearias. Seus clientes agendam sozinhos. A partir de R$ 24,90/mês.">
+    <title>AgendAI — Agendamento Inteligente para Salões e Barbearias</title>
+    <meta name="description" content="Sistema de agendamento online para salões de beleza e barbearias. Seus clientes agendam sozinhos, 24h por dia. Lembretes automáticos, pagamento via Pix. A partir de R$ 24,90/mês.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Scroll progress bar -->
+    <div id="scrollProgress"></div>
 </head>
 <body>
 
+<!-- WHATSAPP FLOATING -->
+<a href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Quero%20saber%20mais%20sobre%20o%20AgendAI" class="whatsapp-btn" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+    <div class="logo">
+        <i data-lucide="calendar-check" style="width:28px;height:28px;stroke:url(#iconGrad)"></i>
+        Agend<span class="g-text">AI</span>
+    </div>
+    <a href="#preco" class="nav-cta">Testar 3 Dias Grátis</a>
+</nav>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-inner">
+    <div class="trust-item"><i data-lucide="shield-check" style="width:16px;height:16px"></i> Dados 100% seguros</div>
+    <div class="trust-item"><i data-lucide="zap" style="width:16px;height:16px"></i> Sem instalar nada</div>
+    <div class="trust-item"><i data-lucide="smartphone" style="width:16px;height:16px"></i> Funciona no celular</div>
+    <div class="trust-item"><i data-lucide="headphones" style="width:16px;height:16px"></i> Suporte via WhatsApp</div>
+    <div class="trust-item"><i data-lucide="lock" style="width:16px;height:16px"></i> Cancele quando quiser</div>
+  </div>
+</div>
+
+<!-- HERO -->
 <header class="hero">
+    <div class="hero-mesh"></div>
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
-    <nav class="nav">
-        <div class="logo"><i data-lucide="calendar-check" style="width:28px;height:28px;stroke:url(#iconGrad)"></i> Agend<span class="g-text">AI</span></div>
-        <a href="#preco" class="nav-cta">Testar 3 Dias Grátis</a>
-    </nav>
+
+    <!-- Floating appointment pills -->
+    <div class="hero-pill pill-1" aria-hidden="true">
+        <div class="pill-dot" style="background:#10B981"></div>
+        <div class="pill-info"><strong>Ana Silva</strong><span>Corte + Escova · 14h00</span></div>
+        <span class="pill-tag confirmed">Confirmado</span>
+    </div>
+    <div class="hero-pill pill-2" aria-hidden="true">
+        <div class="pill-dot" style="background:#A78BFA"></div>
+        <div class="pill-info"><strong>Carlos M.</strong><span>Degradê · 15h30</span></div>
+        <span class="pill-tag pending">Pendente</span>
+    </div>
+    <div class="hero-pill pill-3" aria-hidden="true">
+        <div class="pill-dot" style="background:#EC4899"></div>
+        <div class="pill-info"><strong>Juliana R.</strong><span>Manicure · 16h00</span></div>
+        <span class="pill-tag confirmed">Confirmado</span>
+    </div>
+
     <div class="hero-content">
-        <div class="hero-badge"><i data-lucide="sparkles" style="width:16px;height:16px;display:inline;vertical-align:-2px"></i> 3 dias grátis — Sem cartão de crédito</div>
-        <h1>Seus clientes agendam <span class="g-text">sozinhos.</span><br>Você só atende.</h1>
+        <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            ✦ 3 dias grátis — Sem cartão de crédito
+        </div>
+        <h1>Seus clientes agendam <span class="g-text g-shimmer">sozinhos.</span><br>Você só atende.</h1>
         <p class="hero-sub">Chega de WhatsApp lotado e agenda de papel. Com o AgendAI, seu salão funciona no piloto automático — 24 horas por dia.</p>
         <div class="hero-ctas">
-            <a href="#preco" class="btn btn-p">Começar Grátis →</a>
+            <a href="#preco" class="btn btn-p btn-lg btn-pulse">Começar Grátis →</a>
             <a href="#demo" class="btn btn-s">Ver Demonstração</a>
         </div>
         <div class="proof">
-            <div class="proof-item"><span class="proof-n">30%</span><span class="proof-l">menos faltas</span></div>
+            <div class="proof-item">
+                <span class="proof-n counter" data-target="30">0</span><span class="proof-n">%</span>
+                <span class="proof-l">menos faltas</span>
+            </div>
             <div class="proof-d"></div>
-            <div class="proof-item"><span class="proof-n">2min</span><span class="proof-l">pra configurar</span></div>
+            <div class="proof-item">
+                <span class="proof-n">2min</span>
+                <span class="proof-l">pra configurar</span>
+            </div>
             <div class="proof-d"></div>
-            <div class="proof-item"><span class="proof-n">24/7</span><span class="proof-l">agendamento ativo</span></div>
+            <div class="proof-item">
+                <span class="proof-n">24/7</span>
+                <span class="proof-l">agendamento ativo</span>
+            </div>
         </div>
     </div>
 </header>
 
+<!-- NICHE MARQUEE -->
+<div class="niche-marquee" aria-hidden="true">
+    <div class="marquee-track">
+        <span class="marquee-item"><i data-lucide="scissors" style="width:14px;height:14px"></i> Salão de Beleza</span>
+        <span class="marquee-item"><i data-lucide="user" style="width:14px;height:14px"></i> Barbearia</span>
+        <span class="marquee-item"><i data-lucide="heart" style="width:14px;height:14px"></i> Clínica Estética</span>
+        <span class="marquee-item"><i data-lucide="sparkles" style="width:14px;height:14px"></i> Studio de Nail</span>
+        <span class="marquee-item"><i data-lucide="zap" style="width:14px;height:14px"></i> Studio de Tatuagem</span>
+        <span class="marquee-item"><i data-lucide="activity" style="width:14px;height:14px"></i> Clínica de Massagem</span>
+        <span class="marquee-item"><i data-lucide="sun" style="width:14px;height:14px"></i> Studio de Depilação</span>
+        <span class="marquee-item"><i data-lucide="camera" style="width:14px;height:14px"></i> Studio Fotográfico</span>
+        <!-- Duplicate for seamless loop -->
+        <span class="marquee-item"><i data-lucide="scissors" style="width:14px;height:14px"></i> Salão de Beleza</span>
+        <span class="marquee-item"><i data-lucide="user" style="width:14px;height:14px"></i> Barbearia</span>
+        <span class="marquee-item"><i data-lucide="heart" style="width:14px;height:14px"></i> Clínica Estética</span>
+        <span class="marquee-item"><i data-lucide="sparkles" style="width:14px;height:14px"></i> Studio de Nail</span>
+        <span class="marquee-item"><i data-lucide="zap" style="width:14px;height:14px"></i> Studio de Tatuagem</span>
+        <span class="marquee-item"><i data-lucide="activity" style="width:14px;height:14px"></i> Clínica de Massagem</span>
+        <span class="marquee-item"><i data-lucide="sun" style="width:14px;height:14px"></i> Studio de Depilação</span>
+        <span class="marquee-item"><i data-lucide="camera" style="width:14px;height:14px"></i> Studio Fotográfico</span>
+    </div>
+</div>
+
+<!-- STATS BAND -->
+<section style="padding:0 5% 80px">
+  <div class="container">
+    <div class="stats-band reveal">
+      <div class="stat-item">
+        <span class="stat-num counter" data-target="500">0</span><span class="stat-num">+</span>
+        <span class="stat-label">Salões ativos</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num counter" data-target="12000">0</span><span class="stat-num">+</span>
+        <span class="stat-label">Agendamentos/mês</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">98%</span>
+        <span class="stat-label">Satisfação</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">R$0</span>
+        <span class="stat-label">Taxa por agendamento</span>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- PROBLEM -->
 <section class="problem">
     <div class="container">
+        <div style="text-align:center;margin-bottom:16px">
+            <span class="section-label"><i data-lucide="alert-triangle" style="width:14px;height:14px"></i> O Problema</span>
+        </div>
         <h2 class="reveal">Você vive isso <span class="g-text">todo dia?</span></h2>
         <p class="section-sub reveal">Se identificou com algum desses problemas, o AgendAI resolve todos de uma vez.</p>
         <div class="grid-4">
-            <div class="g-card reveal"><span class="icon"><i data-lucide="message-circle-warning" class="ic-grad"></i></span><h3>WhatsApp lotado</h3><p>Mensagens de agendamento misturadas com conversas pessoais. Clientes ficam sem resposta e você perde horários.</p></div>
-            <div class="g-card reveal"><span class="icon"><i data-lucide="user-x" class="ic-grad"></i></span><h3>Clientes faltam</h3><p>Agendam e não aparecem. Você perde tempo, dinheiro e poderia ter atendido outra pessoa naquele horário.</p></div>
-            <div class="g-card reveal"><span class="icon"><i data-lucide="notebook-pen" class="ic-grad"></i></span><h3>Agenda de papel</h3><p>Rasuras, horários duplicados, confusão. Impossível ser profissional assim em 2026.</p></div>
-            <div class="g-card reveal"><span class="icon"><i data-lucide="trending-down" class="ic-grad"></i></span><h3>Sem controle</h3><p>Não sabe quanto faturou no mês, quais serviços dão mais lucro, quantos clientes atendeu.</p></div>
+            <div class="g-card premium-hover reveal reveal-delay-1">
+                <span class="icon"><i data-lucide="message-circle-warning" class="ic-red"></i></span>
+                <h3>WhatsApp lotado</h3>
+                <p>Mensagens de agendamento misturadas com conversas pessoais. Clientes ficam sem resposta e você perde horários.</p>
+            </div>
+            <div class="g-card premium-hover reveal reveal-delay-2">
+                <span class="icon"><i data-lucide="user-x" class="ic-red"></i></span>
+                <h3>Clientes faltam</h3>
+                <p>Agendam e não aparecem. Você perde tempo, dinheiro e poderia ter atendido outra pessoa naquele horário.</p>
+            </div>
+            <div class="g-card premium-hover reveal reveal-delay-3">
+                <span class="icon"><i data-lucide="notebook-pen" class="ic-red"></i></span>
+                <h3>Agenda de papel</h3>
+                <p>Rasuras, horários duplicados, confusão. Impossível ser profissional assim em 2026.</p>
+            </div>
+            <div class="g-card premium-hover reveal reveal-delay-3">
+                <span class="icon"><i data-lucide="trending-down" class="ic-red"></i></span>
+                <h3>Sem controle</h3>
+                <p>Não sabe quanto faturou no mês, quais serviços dão mais lucro, quantos clientes atendeu.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section>
+    <div class="container">
+        <div style="text-align:center;margin-bottom:16px">
+            <span class="section-label"><i data-lucide="zap" style="width:14px;height:14px"></i> Como Funciona</span>
+        </div>
+        <h2 class="reveal">Configurado em <span class="g-text">3 passos.</span></h2>
+        <p class="section-sub reveal">Sem técnico, sem treinamento. Você coloca o AgendAI no ar hoje mesmo.</p>
+        <div class="steps">
+            <div class="step-card reveal reveal-delay-1">
+                <div class="step-num">1</div>
+                <h3>Cadastre seu salão</h3>
+                <p>Adicione seus serviços, profissionais e horários disponíveis. Leva menos de 2 minutos.</p>
+            </div>
+            <div class="step-card reveal reveal-delay-2">
+                <div class="step-num">2</div>
+                <h3>Compartilhe o link</h3>
+                <p>Coloque seu link de agendamento no WhatsApp, Instagram ou cartão de visita.</p>
+            </div>
+            <div class="step-card reveal reveal-delay-3">
+                <div class="step-num">3</div>
+                <h3>Clientes agendam sozinhos</h3>
+                <p>Eles escolhem serviço, profissional e horário. Você recebe a notificação e é só atender.</p>
+            </div>
         </div>
     </div>
 </section>
@@ -54,13 +203,32 @@
 <!-- SOLUTION -->
 <section>
     <div class="container">
+        <div style="text-align:center;margin-bottom:16px">
+            <span class="section-label"><i data-lucide="sparkles" style="width:14px;height:14px"></i> A Solução</span>
+        </div>
         <h2 class="reveal">Tudo isso resolvido com <span class="g-text">um link.</span></h2>
         <p class="section-sub reveal">Você compartilha um link. Seu cliente agenda, escolhe o profissional, o horário e pronto.</p>
         <div class="grid-4">
-            <div class="g-card reveal"><span class="icon"><i data-lucide="smartphone" class="ic-grad"></i></span><h3>Link de Agendamento</h3><p>Seu cliente acessa pelo celular, escolhe serviço, profissional e horário. Sem ligar, sem esperar resposta.</p></div>
-            <div class="g-card reveal"><span class="icon"><i data-lucide="bell-ring" class="ic-grad"></i></span><h3>Lembretes Automáticos</h3><p>O sistema manda lembrete 24h e 1h antes por WhatsApp. Reduz faltas drasticamente.</p></div>
-            <div class="g-card reveal"><span class="icon"><i data-lucide="credit-card" class="ic-grad"></i></span><h3>Pagamento Antecipado</h3><p>O cliente pode pagar via Pix na hora do agendamento. Acabou o no-show.</p></div>
-            <div class="g-card reveal"><span class="icon"><i data-lucide="bar-chart-3" class="ic-grad"></i></span><h3>Painel Completo</h3><p>Veja agendamentos, faturamento e estatísticas em tempo real. Tudo organizado.</p></div>
+            <div class="g-card reveal reveal-delay-1">
+                <span class="icon"><i data-lucide="smartphone" class="ic-grad"></i></span>
+                <h3>Link de Agendamento</h3>
+                <p>Seu cliente acessa pelo celular, escolhe serviço, profissional e horário. Sem ligar, sem esperar resposta.</p>
+            </div>
+            <div class="g-card reveal reveal-delay-2">
+                <span class="icon"><i data-lucide="bell-ring" class="ic-grad"></i></span>
+                <h3>Lembretes Automáticos</h3>
+                <p>O sistema manda lembrete 24h e 1h antes por WhatsApp. Reduz faltas drasticamente.</p>
+            </div>
+            <div class="g-card reveal reveal-delay-3">
+                <span class="icon"><i data-lucide="credit-card" class="ic-grad"></i></span>
+                <h3>Pagamento via Pix</h3>
+                <p>O cliente pode pagar na hora do agendamento. Acabou o no-show de uma vez por todas.</p>
+            </div>
+            <div class="g-card reveal reveal-delay-3">
+                <span class="icon"><i data-lucide="bar-chart-3" class="ic-grad"></i></span>
+                <h3>Painel Completo</h3>
+                <p>Veja agendamentos, faturamento e estatísticas em tempo real. Tudo organizado e bonito.</p>
+            </div>
         </div>
     </div>
 </section>
@@ -68,17 +236,24 @@
 <!-- DEMO: REAL PRODUCT -->
 <section class="showcase" id="demo">
     <div class="container">
+        <div style="text-align:center;margin-bottom:16px">
+            <span class="section-label"><i data-lucide="monitor" style="width:14px;height:14px"></i> Produto Real</span>
+        </div>
         <h2 class="reveal">Veja o produto <span class="g-text">real.</span></h2>
         <p class="section-sub reveal">Isso é exatamente o que seu cliente vai ver ao agendar — e o que você vai ver no painel.</p>
         <div class="showcase-display">
             <div>
-                <h3 style="margin-bottom:16px;color:var(--pl)"><i data-lucide="smartphone" style="width:20px;height:20px;display:inline;vertical-align:-4px"></i> Tela do Cliente</h3>
+                <div class="showcase-label">
+                    <i data-lucide="smartphone" style="width:16px;height:16px"></i> Tela do Cliente
+                </div>
                 <div class="phone-frame float">
                     <iframe src="booking.html" title="Demo Agendamento"></iframe>
                 </div>
             </div>
             <div>
-                <h3 style="margin-bottom:16px;color:var(--pl)"><i data-lucide="monitor" style="width:20px;height:20px;display:inline;vertical-align:-4px"></i> Seu Painel de Controle</h3>
+                <div class="showcase-label">
+                    <i data-lucide="monitor" style="width:16px;height:16px"></i> Seu Painel de Controle
+                </div>
                 <div class="laptop-frame">
                     <iframe src="admin.html" title="Painel Admin"></iframe>
                 </div>
@@ -91,24 +266,102 @@
 <!-- TESTIMONIALS -->
 <section>
     <div class="container">
+        <div style="text-align:center;margin-bottom:16px">
+            <span class="section-label"><i data-lucide="heart" style="width:14px;height:14px"></i> Depoimentos</span>
+        </div>
         <h2 class="reveal">Quem usa, <span class="g-text">recomenda.</span></h2>
         <p class="section-sub reveal">Veja o que donos de salão dizem sobre o AgendAI.</p>
         <div class="grid-3">
-            <div class="test-card reveal">
-                <div class="stars"><i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i></div>
+            <div class="test-card reveal reveal-delay-1">
+                <div class="stars">
+                    <i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i>
+                    <i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i>
+                    <i data-lucide="star" class="star-fill"></i>
+                </div>
                 <blockquote>"Meus clientes adoraram! Antes eu perdia 1 hora por dia só respondendo WhatsApp pra agendar. Agora eles agendam sozinhos."</blockquote>
-                <div class="author"><div class="avatar"><i data-lucide="user" style="width:20px;height:20px;color:#fff"></i></div><div><div class="name">Ana Paula</div><div class="role">Studio Ana — São Paulo</div></div></div>
+                <div class="author">
+                    <div class="avatar-initials">AP</div>
+                    <div><div class="name">Ana Paula</div><div class="role">Studio Ana — São Paulo</div></div>
+                </div>
             </div>
-            <div class="test-card reveal">
-                <div class="stars"><i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i></div>
+            <div class="test-card reveal reveal-delay-2">
+                <div class="stars">
+                    <i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i>
+                    <i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i>
+                    <i data-lucide="star" class="star-fill"></i>
+                </div>
                 <blockquote>"As faltas diminuíram muito depois dos lembretes automáticos. Antes faltavam 3-4 por dia, agora quase zero."</blockquote>
-                <div class="author"><div class="avatar"><i data-lucide="user" style="width:20px;height:20px;color:#fff"></i></div><div><div class="name">Carlos Eduardo</div><div class="role">Barbearia Premium — RJ</div></div></div>
+                <div class="author">
+                    <div class="avatar-initials" style="background:var(--grad2)">CE</div>
+                    <div><div class="name">Carlos Eduardo</div><div class="role">Barbearia Premium — RJ</div></div>
+                </div>
             </div>
-            <div class="test-card reveal">
-                <div class="stars"><i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i></div>
+            <div class="test-card reveal reveal-delay-3">
+                <div class="stars">
+                    <i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i>
+                    <i data-lucide="star" class="star-fill"></i><i data-lucide="star" class="star-fill"></i>
+                    <i data-lucide="star" class="star-fill"></i>
+                </div>
                 <blockquote>"Por R$ 24,90 é um absurdo de barato. Eu pagava R$ 150 no concorrente e tinha menos funcionalidade."</blockquote>
-                <div class="author"><div class="avatar"><i data-lucide="user" style="width:20px;height:20px;color:#fff"></i></div><div><div class="name">Juliana Mendes</div><div class="role">Espaço Beleza — BH</div></div></div>
+                <div class="author">
+                    <div class="avatar-initials" style="background:var(--grad3)">JM</div>
+                    <div><div class="name">Juliana Mendes</div><div class="role">Espaço Beleza — BH</div></div>
+                </div>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="compare-section">
+    <div class="container">
+        <div style="text-align:center;margin-bottom:16px">
+            <span class="section-label"><i data-lucide="git-compare" style="width:14px;height:14px"></i> Comparativo</span>
+        </div>
+        <h2 class="reveal">Por que <span class="g-text">AgendAI?</span></h2>
+        <p class="section-sub reveal">Compare com o que você usa hoje.</p>
+        <div style="overflow-x:auto" class="reveal">
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>Recurso</th>
+                        <th class="col-header-us">AgendAI</th>
+                        <th style="text-align:center">Concorrentes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Agendamento online 24/7</td>
+                        <td class="col-us"><i data-lucide="check-circle" style="width:20px;height:20px;color:#10B981;display:inline;vertical-align:-4px"></i></td>
+                        <td class="col-them"><i data-lucide="check-circle" style="width:20px;height:20px;color:#10B981;display:inline;vertical-align:-4px"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Lembretes automáticos WhatsApp</td>
+                        <td class="col-us"><i data-lucide="check-circle" style="width:20px;height:20px;color:#10B981;display:inline;vertical-align:-4px"></i></td>
+                        <td class="col-them"><i data-lucide="x-circle" style="width:20px;height:20px;color:#F87171;display:inline;vertical-align:-4px"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Pagamento antecipado via Pix</td>
+                        <td class="col-us"><i data-lucide="check-circle" style="width:20px;height:20px;color:#10B981;display:inline;vertical-align:-4px"></i></td>
+                        <td class="col-them"><i data-lucide="x-circle" style="width:20px;height:20px;color:#F87171;display:inline;vertical-align:-4px"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Preço mensal</td>
+                        <td class="col-us" style="color:var(--pl);font-weight:800">R$ 24,90</td>
+                        <td class="col-them">R$ 100–300</td>
+                    </tr>
+                    <tr>
+                        <td>Suporte via WhatsApp</td>
+                        <td class="col-us"><i data-lucide="check-circle" style="width:20px;height:20px;color:#10B981;display:inline;vertical-align:-4px"></i></td>
+                        <td class="col-them"><i data-lucide="x-circle" style="width:20px;height:20px;color:#F87171;display:inline;vertical-align:-4px"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Cancela quando quiser</td>
+                        <td class="col-us"><i data-lucide="check-circle" style="width:20px;height:20px;color:#10B981;display:inline;vertical-align:-4px"></i></td>
+                        <td class="col-them"><i data-lucide="x-circle" style="width:20px;height:20px;color:#F87171;display:inline;vertical-align:-4px"></i></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </section>
@@ -116,28 +369,34 @@
 <!-- PRICING -->
 <section id="preco">
     <div class="container">
+        <div style="text-align:center;margin-bottom:16px">
+            <span class="section-label"><i data-lucide="tag" style="width:14px;height:14px"></i> Preço</span>
+        </div>
         <h2 class="reveal">Um preço <span class="g-text">justo.</span></h2>
-        <p class="section-sub reveal">Menos que um corte de cabelo por mês.</p>
-        <div class="price-card reveal">
-            <div class="price-badge"><i data-lucide="flame" style="width:14px;height:14px;display:inline;vertical-align:-2px"></i> Mais Popular</div>
-            <h3 style="text-align:center;margin-top:8px">Plano Profissional</h3>
-            <div class="price-val">
-                <span class="price-cur">R$</span>
-                <span class="price-num">24</span>
-                <span class="price-per">,90/mês</span>
+        <p class="section-sub reveal">Menos que um corte de cabelo por mês. Sem surpresas.</p>
+        <div class="price-wrapper reveal">
+            <div class="price-glow"></div>
+            <div class="price-card">
+                <div class="price-badge"><i data-lucide="flame" style="width:14px;height:14px;display:inline;vertical-align:-2px"></i> Mais Popular</div>
+                <h3 style="text-align:center;margin-top:8px;font-size:1.2rem">Plano Profissional</h3>
+                <div class="price-val">
+                    <span class="price-cur">R$</span>
+                    <span class="price-num">24</span>
+                    <span class="price-per">,90/mês</span>
+                </div>
+                <ul class="price-features">
+                    <li><i data-lucide="check" class="ck"></i> Agendamento online ilimitado</li>
+                    <li><i data-lucide="check" class="ck"></i> Lembretes automáticos (WhatsApp)</li>
+                    <li><i data-lucide="check" class="ck"></i> Até 5 profissionais</li>
+                    <li><i data-lucide="check" class="ck"></i> Dashboard com faturamento</li>
+                    <li><i data-lucide="check" class="ck"></i> Pagamento antecipado via Pix</li>
+                    <li><i data-lucide="check" class="ck"></i> Suporte via WhatsApp</li>
+                    <li><i data-lucide="check" class="ck"></i> Sem taxa por agendamento</li>
+                    <li><i data-lucide="check" class="ck"></i> Funciona no celular e computador</li>
+                </ul>
+                <a href="#" class="btn btn-p" style="width:100%;font-size:1.05rem">Começar 3 Dias Grátis →</a>
+                <p class="price-note"><i data-lucide="shield-check" style="width:14px;height:14px;color:var(--success)"></i> Sem cartão de crédito. Cancele quando quiser.</p>
             </div>
-            <ul class="price-features">
-                <li><i data-lucide="check" class="ck"></i> Agendamento online ilimitado</li>
-                <li><i data-lucide="check" class="ck"></i> Lembretes automáticos (WhatsApp)</li>
-                <li><i data-lucide="check" class="ck"></i> Até 5 profissionais</li>
-                <li><i data-lucide="check" class="ck"></i> Dashboard com faturamento</li>
-                <li><i data-lucide="check" class="ck"></i> Pagamento antecipado via Pix</li>
-                <li><i data-lucide="check" class="ck"></i> Suporte via WhatsApp</li>
-                <li><i data-lucide="check" class="ck"></i> Sem taxa por agendamento</li>
-                <li><i data-lucide="check" class="ck"></i> Funciona no celular e computador</li>
-            </ul>
-            <a href="#" class="btn btn-p" style="width:100%">Começar 3 Dias Grátis →</a>
-            <p class="price-note">Sem cartão de crédito. Cancele quando quiser.</p>
         </div>
     </div>
 </section>
@@ -146,12 +405,32 @@
 <section>
     <div class="container">
         <h2 class="reveal">Perguntas <span class="g-text">frequentes</span></h2>
+        <p class="section-sub reveal">Tem dúvida? A resposta provavelmente está aqui.</p>
         <div class="faq">
-            <div class="faq-item"><button class="faq-q" onclick="this.parentElement.classList.toggle('open')">Preciso de computador para usar?</button><div class="faq-a">Não! Tudo funciona pelo navegador do celular. Nada para instalar.</div></div>
-            <div class="faq-item"><button class="faq-q" onclick="this.parentElement.classList.toggle('open')">Meus clientes precisam baixar app?</button><div class="faq-a">Não! Eles recebem um link e agendam direto pelo navegador. Sem download.</div></div>
-            <div class="faq-item"><button class="faq-q" onclick="this.parentElement.classList.toggle('open')">E se eu quiser cancelar?</button><div class="faq-a">Sem multa, sem burocracia. Cancela a qualquer momento pelo WhatsApp.</div></div>
-            <div class="faq-item"><button class="faq-q" onclick="this.parentElement.classList.toggle('open')">O pagamento antecipado é obrigatório?</button><div class="faq-a">Não! Você escolhe se ativa ou não para cada serviço. É opcional.</div></div>
-            <div class="faq-item"><button class="faq-q" onclick="this.parentElement.classList.toggle('open')">Funciona para barbearia também?</button><div class="faq-a">Sim! Funciona para qualquer negócio que trabalhe com agendamento: salões, barbearias, clínicas, studios.</div></div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)">Preciso de computador para usar?</button>
+                <div class="faq-a">Não! Tudo funciona pelo navegador do celular. Nada para instalar.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)">Meus clientes precisam baixar app?</button>
+                <div class="faq-a">Não! Eles recebem um link e agendam direto pelo navegador. Sem download, sem cadastro.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)">E se eu quiser cancelar?</button>
+                <div class="faq-a">Sem multa, sem burocracia. Cancela a qualquer momento pelo WhatsApp. Nenhuma pergunta.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)">O pagamento antecipado é obrigatório?</button>
+                <div class="faq-a">Não! Você escolhe se ativa ou não para cada serviço. É totalmente opcional e configurável.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)">Funciona para barbearia também?</button>
+                <div class="faq-a">Sim! Funciona para qualquer negócio que trabalhe com agendamento: salões, barbearias, clínicas de estética, studios de tatuagem e muito mais.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)">Em quanto tempo começo a usar?</button>
+                <div class="faq-a">Em menos de 2 minutos. Cadastre seus serviços, copie o link e comece a compartilhar. É simples assim.</div>
+            </div>
         </div>
     </div>
 </section>
@@ -160,19 +439,92 @@
 <section class="final-cta">
     <div class="orb orb-3"></div>
     <div class="container" style="position:relative;z-index:2">
-        <h2 class="reveal">Seu salão merece sair do <span class="g-text">caos.</span></h2>
-        <p class="reveal">Comece hoje. 3 dias grátis, sem compromisso.</p>
-        <a href="#preco" class="btn btn-p btn-lg reveal">Começar Agora — É Grátis →</a>
+        <div class="final-cta-card">
+            <h2 class="reveal">Seu salão merece sair do <span class="g-text">caos.</span></h2>
+            <p class="reveal">Comece hoje. 3 dias grátis, sem compromisso, sem cartão.</p>
+            <a href="#preco" class="btn btn-p btn-lg reveal">Começar Agora — É Grátis →</a>
+        </div>
     </div>
 </section>
 
-<footer><p>AgendAI © 2026 — Feito com <i data-lucide="heart" style="width:14px;height:14px;display:inline;vertical-align:-2px;color:#A78BFA;fill:#A78BFA"></i> para profissionais da beleza</p></footer>
+<footer>
+    <p>AgendAI © 2026 — Feito com <i data-lucide="heart" style="width:14px;height:14px;display:inline;vertical-align:-2px;color:#A78BFA;fill:#A78BFA"></i> para profissionais da beleza</p>
+    <div class="footer-links">
+        <a href="#">Termos</a>
+        <a href="#">Privacidade</a>
+        <a href="#">Contato</a>
+    </div>
+</footer>
 
 <svg width="0" height="0"><defs><linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7C3AED"/><stop offset="100%" stop-color="#EC4899"/></linearGradient></defs></svg>
 
 <script>
-const obs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:.1});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+// Sticky nav
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+    entries.forEach(el => { if (el.isIntersecting) el.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Counter animation
+function animateCounter(el, target, duration = 1800) {
+    let start = 0;
+    const step = Math.max(1, target / (duration / 16));
+    const update = () => {
+        start = Math.min(start + step, target);
+        el.textContent = Math.floor(start).toLocaleString('pt-BR');
+        if (start < target) requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+}
+const counterObs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const el = entry.target;
+            animateCounter(el, parseInt(el.dataset.target));
+            counterObs.unobserve(el);
+        }
+    });
+}, { threshold: 0.5 });
+document.querySelectorAll('.counter').forEach(el => counterObs.observe(el));
+
+// FAQ toggle
+function toggleFaq(btn) {
+    const item = btn.parentElement;
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+}
+
+// 3D tilt on cards
+document.querySelectorAll('.g-card, .step-card, .test-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform = `translateY(-7px) rotateX(${-y*6}deg) rotateY(${x*6}deg)`;
+        card.style.transition = 'transform .05s';
+    });
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        card.style.transition = 'transform .4s cubic-bezier(.34,1.56,.64,1)';
+    });
+});
+
+// Scroll progress bar
+const progressEl = document.getElementById('scrollProgress');
+window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const total = document.body.scrollHeight - window.innerHeight;
+    progressEl.style.width = (scrolled / total * 100) + '%';
+}, { passive: true });
+
+// Init Lucide
 lucide.createIcons();
 </script>
 </body>
