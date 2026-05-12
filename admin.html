@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgendAI — Painel do Salão</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7C3AED; --primary-light: #A78BFA; --bg: #0F0F1A;
+            --bg-card: #1A1A2E; --bg-hover: #222240; --text: #F1F1F6; --text-muted: #9CA3AF;
+            --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
+            --gradient: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%); --radius: 16px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+
+        .sidebar { width: 240px; background: var(--bg-card); border-right: 1px solid rgba(255,255,255,0.05);
+            padding: 24px 16px; display: flex; flex-direction: column; position: fixed; height: 100vh; }
+        .sidebar-logo { font-size: 1.3rem; font-weight: 800; margin-bottom: 32px; text-align: center; }
+        .sidebar-logo span { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 10px;
+            color: var(--text-muted); cursor: pointer; transition: all 0.2s; font-size: 0.9rem; margin-bottom: 4px; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+        .nav-item.active { background: rgba(124,58,237,0.15); color: var(--primary-light); }
+        .sidebar-footer { margin-top: auto; text-align: center; font-size: 0.75rem; color: var(--text-muted); }
+
+        .main { margin-left: 240px; flex: 1; padding: 32px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .page-header h1 { font-size: 1.5rem; font-weight: 700; }
+        .date-badge { background: var(--bg-card); padding: 10px 20px; border-radius: 50px;
+            font-size: 0.85rem; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.05); }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+        .stat-card { background: var(--bg-card); border-radius: var(--radius); padding: 24px;
+            border: 1px solid rgba(255,255,255,0.05); }
+        .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+        .stat-value { font-size: 2rem; font-weight: 800; }
+        .stat-value.revenue { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-change { font-size: 0.75rem; margin-top: 4px; }
+        .stat-change.up { color: var(--success); }
+        .stat-change.down { color: var(--danger); }
+
+        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+
+        .card { background: var(--bg-card); border-radius: var(--radius); padding: 24px;
+            border: 1px solid rgba(255,255,255,0.05); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-header h2 { font-size: 1.1rem; font-weight: 600; }
+        .card-action { font-size: 0.8rem; color: var(--primary-light); cursor: pointer; }
+
+        .booking-row { display: flex; align-items: center; gap: 14px; padding: 14px;
+            border-radius: 10px; margin-bottom: 8px; transition: background 0.2s; }
+        .booking-row:hover { background: var(--bg-hover); }
+        .booking-time { font-size: 0.85rem; font-weight: 700; min-width: 50px; color: var(--primary-light); }
+        .booking-info { flex: 1; }
+        .booking-info h4 { font-size: 0.9rem; font-weight: 500; }
+        .booking-info p { font-size: 0.75rem; color: var(--text-muted); }
+        .booking-status { padding: 4px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 600; }
+        .status-confirmed { background: rgba(16,185,129,0.15); color: var(--success); }
+        .status-pending { background: rgba(245,158,11,0.15); color: var(--warning); }
+        .status-cancelled { background: rgba(239,68,68,0.15); color: var(--danger); }
+
+        .empty-state { text-align: center; padding: 40px; color: var(--text-muted); }
+        .empty-state span { font-size: 3rem; display: block; margin-bottom: 12px; }
+
+        .link-box { background: rgba(124,58,237,0.1); border: 1px dashed var(--primary);
+            border-radius: 10px; padding: 16px; margin-top: 12px; display: flex; align-items: center; gap: 10px; }
+        .link-box input { flex: 1; background: none; border: none; color: var(--text); font-size: 0.85rem;
+            font-family: monospace; outline: none; }
+        .link-box button { background: var(--primary); color: white; border: none; padding: 8px 16px;
+            border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+
+        .setup-form { margin-top: 16px; }
+        .setup-form .input-row { margin-bottom: 12px; }
+        .setup-form label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+        .setup-form input, .setup-form select { width: 100%; padding: 10px 14px; background: var(--bg);
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: var(--text);
+            font-size: 0.9rem; font-family: inherit; outline: none; }
+        .setup-form input:focus, .setup-form select:focus { border-color: var(--primary); }
+        .btn-sm { padding: 10px 20px; background: var(--gradient); color: white; border: none;
+            border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 0.85rem; font-family: inherit; margin-top: 12px; }
+
+        @media (max-width: 1024px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .content-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">📅 Agend<span>AI</span></div>
+        <div class="nav-item active" onclick="showPage('dashboard')">📊 Dashboard</div>
+        <div class="nav-item" onclick="showPage('bookings')">📋 Agendamentos</div>
+        <div class="nav-item" onclick="showPage('config')">⚙️ Configurar</div>
+        <div class="nav-item" onclick="showPage('share')">🔗 Compartilhar</div>
+        <div class="sidebar-footer">AgendAI v1.0<br>R$ 24,90/mês</div>
+    </aside>
+
+    <main class="main">
+        <!-- Dashboard Page -->
+        <div id="pageDashboard">
+            <div class="page-header">
+                <h1>Bem-vindo ao seu painel 👋</h1>
+                <div class="date-badge" id="todayDate"></div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <p class="stat-label">Agendamentos Hoje</p>
+                    <p class="stat-value" id="statToday">0</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Esta Semana</p>
+                    <p class="stat-value" id="statWeek">0</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Faturamento Hoje</p>
+                    <p class="stat-value revenue" id="statRevenue">R$ 0</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Clientes Únicos</p>
+                    <p class="stat-value" id="statClients">0</p>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📅 Próximos Agendamentos</h2>
+                        <span class="card-action" onclick="showPage('bookings')">Ver todos →</span>
+                    </div>
+                    <div id="upcomingList">
+                        <div class="empty-state"><span>📭</span>Nenhum agendamento ainda.<br>Compartilhe seu link para receber clientes!</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h2>🔗 Seu Link</h2></div>
+                    <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">Compartilhe este link com seus clientes:</p>
+                    <div class="link-box">
+                        <input type="text" id="shareLink" value="booking.html?salon=demo" readonly>
+                        <button onclick="copyLink()">Copiar</button>
+                    </div>
+                    <p style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;">💡 Cole no Instagram, WhatsApp ou cartão de visitas!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Page -->
+        <div id="pageBookings" style="display:none;">
+            <div class="page-header">
+                <h1>📋 Todos os Agendamentos</h1>
+            </div>
+            <div class="card">
+                <div id="allBookingsList">
+                    <div class="empty-state"><span>📭</span>Nenhum agendamento registrado.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Config Page -->
+        <div id="pageConfig" style="display:none;">
+            <div class="page-header"><h1>⚙️ Configurar Salão</h1></div>
+            <div class="card">
+                <div class="card-header"><h2>Dados do Salão</h2></div>
+                <div class="setup-form">
+                    <div class="input-row">
+                        <label>Nome do Salão</label>
+                        <input type="text" id="cfgName" placeholder="Meu Salão">
+                    </div>
+                    <div class="input-row">
+                        <label>Endereço</label>
+                        <input type="text" id="cfgAddr" placeholder="Rua, número — Cidade">
+                    </div>
+                    <div class="input-row">
+                        <label>WhatsApp do Salão</label>
+                        <input type="tel" id="cfgPhone" placeholder="(11) 99999-9999">
+                    </div>
+                    <button class="btn-sm" onclick="saveConfig()">Salvar Configurações</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Share Page -->
+        <div id="pageShare" style="display:none;">
+            <div class="page-header"><h1>🔗 Compartilhar Link</h1></div>
+            <div class="card">
+                <div class="card-header"><h2>Link de Agendamento</h2></div>
+                <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:16px;">Envie este link para seus clientes agendarem online:</p>
+                <div class="link-box">
+                    <input type="text" id="shareLink2" value="booking.html?salon=demo" readonly>
+                    <button onclick="copyLink()">Copiar</button>
+                </div>
+                <h3 style="margin-top:24px;font-size:0.95rem;">Compartilhar via:</h3>
+                <div style="display:flex;gap:12px;margin-top:12px;">
+                    <button class="btn-sm" onclick="shareWhatsApp()">📱 WhatsApp</button>
+                    <button class="btn-sm" onclick="shareInstagram()">📸 Instagram</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    const SALON_ID = 'demo';
+
+    function init() {
+        document.getElementById('todayDate').textContent =
+            new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        loadStats();
+        loadUpcoming();
+    }
+
+    function getBookings() {
+        return JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
+    }
+
+    function loadStats() {
+        const bookings = getBookings();
+        const today = new Date().toISOString().split('T')[0];
+        const todayBookings = bookings.filter(b => b.date === today);
+
+        const weekStart = new Date();
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+        const weekBookings = bookings.filter(b => new Date(b.date) >= weekStart);
+
+        const uniquePhones = new Set(bookings.map(b => b.clientPhone));
+
+        document.getElementById('statToday').textContent = todayBookings.length;
+        document.getElementById('statWeek').textContent = weekBookings.length;
+        document.getElementById('statRevenue').textContent = `R$ ${todayBookings.reduce((s, b) => s + (b.price || 0), 0)}`;
+        document.getElementById('statClients').textContent = uniquePhones.size;
+    }
+
+    function loadUpcoming() {
+        const bookings = getBookings();
+        const today = new Date().toISOString().split('T')[0];
+        const upcoming = bookings.filter(b => b.date >= today).sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)).slice(0, 8);
+
+        const container = document.getElementById('upcomingList');
+        if (upcoming.length === 0) {
+            container.innerHTML = '<div class="empty-state"><span>📭</span>Nenhum agendamento ainda.<br>Compartilhe seu link!</div>';
+            return;
+        }
+
+        container.innerHTML = upcoming.map(b => `
+            <div class="booking-row">
+                <span class="booking-time">${b.time}</span>
+                <div class="booking-info">
+                    <h4>${b.clientName}</h4>
+                    <p>${b.service} • ${b.pro} • ${new Date(b.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}</p>
+                </div>
+                <span class="booking-status status-${b.status}">${b.status === 'confirmed' ? 'Confirmado' : b.status}</span>
+            </div>
+        `).join('');
+
+        // Also update all bookings page
+        document.getElementById('allBookingsList').innerHTML = bookings.sort((a, b) => b.createdAt?.localeCompare(a.createdAt)).map(b => `
+            <div class="booking-row">
+                <span class="booking-time">${b.time}</span>
+                <div class="booking-info">
+                    <h4>${b.clientName} — ${b.clientPhone}</h4>
+                    <p>${b.service} • ${b.pro} • ${new Date(b.date + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
+                </div>
+                <span class="booking-status status-${b.status}">${b.status === 'confirmed' ? 'Confirmado' : b.status}</span>
+            </div>
+        `).join('');
+    }
+
+    function showPage(page) {
+        document.querySelectorAll('.main > div').forEach(d => d.style.display = 'none');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+        const pages = { dashboard: 'pageDashboard', bookings: 'pageBookings', config: 'pageConfig', share: 'pageShare' };
+        document.getElementById(pages[page]).style.display = 'block';
+        event.target.classList.add('active');
+
+        if (page === 'bookings') loadUpcoming();
+    }
+
+    function copyLink() {
+        const input = document.getElementById('shareLink');
+        input.select();
+        document.execCommand('copy');
+        alert('Link copiado!');
+    }
+
+    function shareWhatsApp() {
+        const link = document.getElementById('shareLink').value;
+        window.open(`https://wa.me/?text=Agende seu horário online: ${encodeURIComponent(link)}`, '_blank');
+    }
+
+    function saveConfig() {
+        const config = {
+            name: document.getElementById('cfgName').value,
+            address: document.getElementById('cfgAddr').value,
+            phone: document.getElementById('cfgPhone').value,
+        };
+        localStorage.setItem(`agendai_${SALON_ID}_config`, JSON.stringify(config));
+        alert('Configurações salvas!');
+    }
+
+    init();
+    </script>
+</body>
+</html>

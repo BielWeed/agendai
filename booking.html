@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgendAI — Agendar Horário</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7C3AED; --primary-light: #A78BFA; --primary-dark: #5B21B6;
+            --bg: #0F0F1A; --bg-card: #1A1A2E; --text: #F1F1F6; --text-muted: #9CA3AF;
+            --success: #10B981; --gradient: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%);
+            --radius: 16px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        .container { max-width: 480px; margin: 0 auto; padding: 20px; }
+        .salon-header { text-align: center; padding: 32px 0 24px; }
+        .salon-header h1 { font-size: 1.5rem; font-weight: 700; }
+        .salon-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+        .salon-logo { width: 64px; height: 64px; border-radius: 50%; background: var(--gradient);
+            display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 12px; }
+
+        .step-indicator { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
+        .step-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.1); transition: all 0.3s; }
+        .step-dot.active { background: var(--primary); width: 30px; border-radius: 5px; }
+        .step-dot.done { background: var(--success); }
+
+        .step { display: none; animation: fadeIn 0.3s ease; }
+        .step.active { display: block; }
+
+        .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 16px; }
+
+        .service-card { display: flex; justify-content: space-between; align-items: center;
+            padding: 16px; margin-bottom: 10px; background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+        .service-card:hover, .service-card.selected { border-color: var(--primary); background: rgba(124,58,237,0.1); }
+        .service-info h3 { font-size: 0.95rem; font-weight: 500; }
+        .service-info p { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+        .service-price { font-weight: 700; color: var(--primary-light); font-size: 1.1rem; }
+
+        .pro-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .pro-card { text-align: center; padding: 20px 12px; background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+        .pro-card:hover, .pro-card.selected { border-color: var(--primary); background: rgba(124,58,237,0.1); }
+        .pro-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--gradient);
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin: 0 auto 8px; }
+        .pro-card h3 { font-size: 0.85rem; font-weight: 500; }
+
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .cal-header h3 { font-size: 1rem; }
+        .cal-nav { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text);
+            padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+        .cal-nav:hover { border-color: var(--primary); }
+        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center;
+            font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
+        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            border-radius: 10px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .day-cell:hover { background: rgba(124,58,237,0.2); }
+        .day-cell.selected { background: var(--primary); color: white; font-weight: 700; }
+        .day-cell.disabled { opacity: 0.2; cursor: default; }
+        .day-cell.today { border: 1px solid var(--primary); }
+
+        .times-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+        .time-btn { padding: 12px 8px; text-align: center; background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; cursor: pointer;
+            transition: all 0.2s; font-size: 0.9rem; color: var(--text); }
+        .time-btn:hover, .time-btn.selected { border-color: var(--primary); background: rgba(124,58,237,0.15); color: white; }
+        .time-btn.unavailable { opacity: 0.3; cursor: default; text-decoration: line-through; }
+
+        .summary-card { background: var(--bg-card); border-radius: var(--radius); padding: 24px;
+            border: 1px solid rgba(255,255,255,0.05); }
+        .summary-row { display: flex; justify-content: space-between; padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        .summary-row:last-child { border: none; }
+        .summary-label { color: var(--text-muted); }
+        .summary-total { font-size: 1.3rem; font-weight: 800; color: var(--success); }
+
+        .input-group { margin-bottom: 16px; }
+        .input-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; }
+        .input-group input { width: 100%; padding: 14px 16px; background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: var(--text);
+            font-size: 0.95rem; font-family: inherit; outline: none; transition: border 0.2s; }
+        .input-group input:focus { border-color: var(--primary); }
+
+        .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 50px;
+            font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 20px; font-family: inherit; }
+        .btn-primary { background: var(--gradient); color: white; box-shadow: 0 4px 15px rgba(124,58,237,0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(124,58,237,0.5); }
+        .btn-back { background: transparent; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); margin-top: 10px; }
+
+        .success-screen { text-align: center; padding: 60px 20px; }
+        .success-icon { font-size: 5rem; animation: bounceIn 0.5s ease; }
+        .success-screen h2 { margin: 16px 0 8px; color: var(--success); }
+        .success-screen p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+        .success-details { background: var(--bg-card); border-radius: 12px; padding: 20px; margin-top: 24px; text-align: left; }
+
+        .powered-by { text-align: center; padding: 20px; font-size: 0.75rem; color: var(--text-muted); }
+        .powered-by a { color: var(--primary-light); text-decoration: none; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounceIn { 0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="salon-header">
+            <div class="salon-logo" id="salonLogo">✂️</div>
+            <h1 id="salonName">Carregando...</h1>
+            <p id="salonAddr"></p>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step-dot active" id="dot0"></div>
+            <div class="step-dot" id="dot1"></div>
+            <div class="step-dot" id="dot2"></div>
+            <div class="step-dot" id="dot3"></div>
+            <div class="step-dot" id="dot4"></div>
+        </div>
+
+        <!-- Step 0: Services -->
+        <div class="step active" id="step0">
+            <p class="section-title">Escolha o serviço</p>
+            <div id="serviceList"></div>
+        </div>
+
+        <!-- Step 1: Professional -->
+        <div class="step" id="step1">
+            <p class="section-title">Escolha o profissional</p>
+            <div class="pro-grid" id="proList"></div>
+            <button class="btn btn-back" onclick="goStep(0)">← Voltar</button>
+        </div>
+
+        <!-- Step 2: Date & Time -->
+        <div class="step" id="step2">
+            <div class="cal-header">
+                <button class="cal-nav" onclick="changeMonth(-1)">← Anterior</button>
+                <h3 id="calMonthYear"></h3>
+                <button class="cal-nav" onclick="changeMonth(1)">Próximo →</button>
+            </div>
+            <div class="weekdays"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div>
+            <div class="days-grid" id="daysGrid"></div>
+            <div id="timesSection" style="display:none;">
+                <p class="section-title" style="margin-top:20px;">Horários disponíveis</p>
+                <div class="times-grid" id="timesGrid"></div>
+            </div>
+            <button class="btn btn-back" onclick="goStep(1)">← Voltar</button>
+        </div>
+
+        <!-- Step 3: Client Info -->
+        <div class="step" id="step3">
+            <p class="section-title">Seus dados</p>
+            <div class="input-group">
+                <label>Nome completo</label>
+                <input type="text" id="clientName" placeholder="Ex: Maria Silva">
+            </div>
+            <div class="input-group">
+                <label>WhatsApp</label>
+                <input type="tel" id="clientPhone" placeholder="(11) 99999-9999">
+            </div>
+            <div class="input-group">
+                <label>Email (opcional)</label>
+                <input type="email" id="clientEmail" placeholder="email@exemplo.com">
+            </div>
+            <div class="summary-card" style="margin-top:20px;">
+                <p class="section-title" style="margin-bottom:12px;">Resumo</p>
+                <div class="summary-row"><span class="summary-label">Serviço</span><span id="sumService"></span></div>
+                <div class="summary-row"><span class="summary-label">Profissional</span><span id="sumPro"></span></div>
+                <div class="summary-row"><span class="summary-label">Data</span><span id="sumDate"></span></div>
+                <div class="summary-row"><span class="summary-label">Horário</span><span id="sumTime"></span></div>
+                <div class="summary-row"><span class="summary-label">Valor</span><span class="summary-total" id="sumPrice"></span></div>
+            </div>
+            <button class="btn btn-primary" onclick="confirmBooking()">Confirmar Agendamento</button>
+            <button class="btn btn-back" onclick="goStep(2)">← Voltar</button>
+        </div>
+
+        <!-- Step 4: Success -->
+        <div class="step" id="step4">
+            <div class="success-screen">
+                <div class="success-icon">✅</div>
+                <h2>Agendado com sucesso!</h2>
+                <p>Você receberá um lembrete por WhatsApp 24h antes do horário.</p>
+                <div class="success-details">
+                    <div class="summary-row"><span class="summary-label">Serviço</span><span id="okService"></span></div>
+                    <div class="summary-row"><span class="summary-label">Data</span><span id="okDate"></span></div>
+                    <div class="summary-row"><span class="summary-label">Horário</span><span id="okTime"></span></div>
+                    <div class="summary-row"><span class="summary-label">Profissional</span><span id="okPro"></span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="powered-by">Powered by <a href="#">AgendAI</a> — R$ 24,90/mês</div>
+    </div>
+
+    <script>
+    // ===== Configuration (loaded from URL params or defaults) =====
+    const params = new URLSearchParams(window.location.search);
+    const SALON_ID = params.get('salon') || 'demo';
+
+    const DEMO_CONFIG = {
+        name: 'Studio Beleza Premium',
+        address: 'Rua Exemplo, 123 — São Paulo',
+        emoji: '✂️',
+        services: [
+            { id: 1, name: 'Corte Feminino', duration: 45, price: 80, emoji: '✂️' },
+            { id: 2, name: 'Escova Progressiva', duration: 120, price: 180, emoji: '💇‍♀️' },
+            { id: 3, name: 'Coloração', duration: 90, price: 150, emoji: '🎨' },
+            { id: 4, name: 'Corte Masculino', duration: 30, price: 50, emoji: '💈' },
+            { id: 5, name: 'Barba', duration: 20, price: 35, emoji: '🧔' },
+            { id: 6, name: 'Manicure + Pedicure', duration: 60, price: 70, emoji: '💅' },
+            { id: 7, name: 'Hidratação', duration: 45, price: 90, emoji: '💧' },
+        ],
+        professionals: [
+            { id: 1, name: 'Ana Paula', emoji: '👩' },
+            { id: 2, name: 'Carlos', emoji: '👨' },
+            { id: 3, name: 'Juliana', emoji: '👩‍🦰' },
+            { id: 4, name: 'Qualquer', emoji: '🔄' },
+        ],
+        hours: ['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00'],
+        closedDays: [0], // Sunday
+    };
+
+    let config = DEMO_CONFIG;
+    let selection = { service: null, professional: null, date: null, time: null };
+    let currentMonth = new Date();
+
+    // ===== Init =====
+    function init() {
+        document.getElementById('salonName').textContent = config.name;
+        document.getElementById('salonAddr').textContent = config.address;
+        document.getElementById('salonLogo').textContent = config.emoji;
+        renderServices();
+    }
+
+    function renderServices() {
+        const container = document.getElementById('serviceList');
+        container.innerHTML = config.services.map(s => `
+            <div class="service-card" onclick="selectService(${s.id})">
+                <div class="service-info">
+                    <h3>${s.emoji} ${s.name}</h3>
+                    <p>${s.duration} min</p>
+                </div>
+                <span class="service-price">R$ ${s.price}</span>
+            </div>
+        `).join('');
+    }
+
+    function selectService(id) {
+        selection.service = config.services.find(s => s.id === id);
+        document.querySelectorAll('.service-card').forEach((c,i) => {
+            c.classList.toggle('selected', config.services[i].id === id);
+        });
+        setTimeout(() => goStep(1), 200);
+    }
+
+    function renderProfessionals() {
+        const container = document.getElementById('proList');
+        container.innerHTML = config.professionals.map(p => `
+            <div class="pro-card" onclick="selectPro(${p.id})">
+                <div class="pro-avatar">${p.emoji}</div>
+                <h3>${p.name}</h3>
+            </div>
+        `).join('');
+    }
+
+    function selectPro(id) {
+        selection.professional = config.professionals.find(p => p.id === id);
+        document.querySelectorAll('.pro-card').forEach((c,i) => {
+            c.classList.toggle('selected', config.professionals[i].id === id);
+        });
+        setTimeout(() => goStep(2), 200);
+    }
+
+    function renderCalendar() {
+        const year = currentMonth.getFullYear();
+        const month = currentMonth.getMonth();
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        document.getElementById('calMonthYear').textContent =
+            new Date(year, month).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const grid = document.getElementById('daysGrid');
+        grid.innerHTML = '';
+
+        for (let i = 0; i < firstDay; i++) {
+            grid.innerHTML += '<div class="day-cell disabled"></div>';
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const date = new Date(year, month, d);
+            const isPast = date < today;
+            const isClosed = config.closedDays.includes(date.getDay());
+            const isToday = date.getTime() === today.getTime();
+            const isSelected = selection.date && date.getTime() === selection.date.getTime();
+
+            let cls = 'day-cell';
+            if (isPast || isClosed) cls += ' disabled';
+            if (isToday) cls += ' today';
+            if (isSelected) cls += ' selected';
+
+            grid.innerHTML += `<div class="${cls}" onclick="${isPast || isClosed ? '' : `selectDate(${year},${month},${d})`}">${d}</div>`;
+        }
+    }
+
+    function selectDate(y, m, d) {
+        selection.date = new Date(y, m, d);
+        renderCalendar();
+        renderTimes();
+    }
+
+    function renderTimes() {
+        document.getElementById('timesSection').style.display = 'block';
+        const grid = document.getElementById('timesGrid');
+        const bookedSlots = getBookedSlots();
+        grid.innerHTML = config.hours.map(h => {
+            const booked = bookedSlots.includes(h);
+            return `<div class="time-btn${booked ? ' unavailable' : ''}" onclick="${booked ? '' : `selectTime('${h}')`}">${h}</div>`;
+        }).join('');
+    }
+
+    function getBookedSlots() {
+        const bookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
+        if (!selection.date) return [];
+        const dateStr = selection.date.toISOString().split('T')[0];
+        return bookings.filter(b => b.date === dateStr && (!selection.professional || b.proId === selection.professional.id || selection.professional.name === 'Qualquer'))
+            .map(b => b.time);
+    }
+
+    function selectTime(time) {
+        selection.time = time;
+        document.querySelectorAll('.time-btn').forEach(b => b.classList.toggle('selected', b.textContent === time));
+        setTimeout(() => goStep(3), 200);
+    }
+
+    function goStep(n) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById(`step${n}`).classList.add('active');
+
+        for (let i = 0; i < 5; i++) {
+            const dot = document.getElementById(`dot${i}`);
+            dot.className = 'step-dot';
+            if (i < n) dot.classList.add('done');
+            if (i === n) dot.classList.add('active');
+        }
+
+        if (n === 1) renderProfessionals();
+        if (n === 2) renderCalendar();
+        if (n === 3) updateSummary();
+    }
+
+    function updateSummary() {
+        document.getElementById('sumService').textContent = selection.service?.name || '';
+        document.getElementById('sumPro').textContent = selection.professional?.name || '';
+        document.getElementById('sumDate').textContent = selection.date?.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }) || '';
+        document.getElementById('sumTime').textContent = selection.time || '';
+        document.getElementById('sumPrice').textContent = `R$ ${selection.service?.price || 0},00`;
+    }
+
+    function confirmBooking() {
+        const name = document.getElementById('clientName').value.trim();
+        const phone = document.getElementById('clientPhone').value.trim();
+        if (!name || !phone) { alert('Por favor, preencha seu nome e WhatsApp.'); return; }
+
+        const booking = {
+            id: Date.now(),
+            service: selection.service.name,
+            serviceId: selection.service.id,
+            price: selection.service.price,
+            pro: selection.professional.name,
+            proId: selection.professional.id,
+            date: selection.date.toISOString().split('T')[0],
+            time: selection.time,
+            clientName: name,
+            clientPhone: phone,
+            clientEmail: document.getElementById('clientEmail').value.trim(),
+            createdAt: new Date().toISOString(),
+            status: 'confirmed'
+        };
+
+        const bookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
+        bookings.push(booking);
+        localStorage.setItem(`agendai_${SALON_ID}_bookings`, JSON.stringify(bookings));
+
+        document.getElementById('okService').textContent = booking.service;
+        document.getElementById('okDate').textContent = selection.date.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+        document.getElementById('okTime').textContent = booking.time;
+        document.getElementById('okPro').textContent = booking.pro;
+
+        goStep(4);
+    }
+
+    function changeMonth(dir) {
+        currentMonth.setMonth(currentMonth.getMonth() + dir);
+        renderCalendar();
+    }
+
+    init();
+    </script>
+</body>
+</html>
