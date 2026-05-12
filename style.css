@@ -111,6 +111,11 @@ section{padding:100px 5%;position:relative}
 /* FOOTER */
 footer{text-align:center;padding:32px 5%;color:var(--muted);font-size:.82rem;border-top:1px solid rgba(255,255,255,.04)}
 
+/* LUCIDE ICONS */
+.ic-grad{width:44px;height:44px;stroke:#A78BFA;stroke-width:1.5}
+.star-fill{width:18px;height:18px;color:#FBBF24;fill:#FBBF24;stroke:none}
+.ck{width:18px;height:18px;color:#10B981;display:inline;vertical-align:-4px;margin-right:6px}
+
 /* ANIMATIONS */
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
