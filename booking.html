@@ -7,15 +7,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #7C3AED; --primary-light: #A78BFA; --primary-dark: #5B21B6;
-            --bg: #0F0F1A; --bg-card: #1A1A2E; --text: #F1F1F6; --text-muted: #9CA3AF;
-            --success: #10B981; --gradient: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%);
-            --radius: 16px;
+            --primary: #8B5CF6; --primary-light: #C4B5FD; --primary-dark: #4C1D95;
+            --bg: #03030b; --bg-card: rgba(15, 15, 35, 0.5); --text: #F1F1F6; --text-muted: #94A3B8;
+            --success: #10B981; --gradient: linear-gradient(135deg, #06B6D4 0%, #8B5CF6 50%, #F472B6 100%);
+            --radius: 24px;
+            --glass: blur(60px) saturate(240%);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-        .container { max-width: 480px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 480px; margin: 0 auto; padding: 20px; animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
         .salon-header { text-align: center; padding: 32px 0 24px; }
         .salon-header h1 { font-size: 1.5rem; font-weight: 700; }
         .salon-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
@@ -23,7 +24,7 @@
             display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 12px; }
 
         .step-indicator { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
-        .step-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.1); transition: all 0.3s; }
+        .step-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: all 0.3s; }
         .step-dot.active { background: var(--primary); width: 30px; border-radius: 5px; }
         .step-dot.done { background: var(--success); }
 
@@ -33,9 +34,10 @@
         .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 16px; }
 
         .service-card { display: flex; justify-content: space-between; align-items: center;
-            padding: 16px; margin-bottom: 10px; background: var(--bg-card);
-            border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer; transition: all 0.2s; }
-        .service-card:hover, .service-card.selected { border-color: var(--primary); background: rgba(124,58,237,0.1); }
+            padding: 20px; margin-bottom: 12px; background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; cursor: pointer; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            backdrop-filter: var(--glass); }
+        .service-card:hover, .service-card.selected { border-color: var(--primary); background: rgba(124,58,237,0.1); transform: scale(1.02); }
         .service-info h3 { font-size: 0.95rem; font-weight: 500; }
         .service-info p { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
         .service-price { font-weight: 700; color: var(--primary-light); font-size: 1.1rem; }
@@ -99,6 +101,13 @@
 
         .powered-by { text-align: center; padding: 20px; font-size: 0.75rem; color: var(--text-muted); }
         .powered-by a { color: var(--primary-light); text-decoration: none; }
+
+        .confetti { position: fixed; width: 10px; height: 10px; background-color: #f2d74e; top: -10px; z-index: 1000; border-radius: 2px; animation: confettiFall 3s ease-in infinite; }
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotate(0); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes bounceIn { 0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
@@ -188,6 +197,22 @@
                     <div class="summary-row"><span class="summary-label">Horário</span><span id="okTime"></span></div>
                     <div class="summary-row"><span class="summary-label">Profissional</span><span id="okPro"></span></div>
                 </div>
+
+                <!-- NEW REGISTRATION PROMPT -->
+                <div id="registrationBlock" style="margin-top: 30px; background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 16px; padding: 24px; text-align: left; display: none;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 8px;">Crie sua conta (Opcional)</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Para acompanhar este agendamento e participar do Clube VIP, crie uma senha. Seus dados já estão salvos!</p>
+                    <div class="input-group">
+                        <label>Senha</label>
+                        <input type="password" id="regPassword" placeholder="Crie uma senha segura">
+                    </div>
+                    <button class="btn btn-primary" style="padding: 14px; font-size: 0.95rem; margin-top: 10px;" onclick="createAccount()">Criar Conta e Acessar Portal</button>
+                    <button class="btn btn-back" style="border: none; padding: 10px;" onclick="location.href='index.html'">Pular por enquanto</button>
+                </div>
+                <div id="portalBtnBlock" style="display: none; margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="location.href='index.html'">Acessar Portal do Cliente</button>
+                </div>
+
             </div>
         </div>
 
@@ -227,7 +252,18 @@
     let currentMonth = new Date();
 
     // ===== Init =====
+    // BUG#9 FIX + BUG-C1 FIX: aplica TODOS os campos da config salva pelo admin ao config vivo
     function init() {
+        const saved = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_config`) || 'null');
+        if (saved) {
+            // Sobrescreve apenas os campos que existem na config salva
+            if (saved.name)         config.name         = saved.name;
+            if (saved.address)      config.address      = saved.address;
+            if (saved.services    && Array.isArray(saved.services)    && saved.services.length)    config.services     = saved.services;
+            if (saved.professionals && Array.isArray(saved.professionals) && saved.professionals.length) config.professionals = saved.professionals;
+            if (saved.hours       && Array.isArray(saved.hours)       && saved.hours.length)       config.hours        = saved.hours;
+            if (saved.closedDays  && Array.isArray(saved.closedDays))  config.closedDays   = saved.closedDays;
+        }
         document.getElementById('salonName').textContent = config.name;
         document.getElementById('salonAddr').textContent = config.address;
         document.getElementById('salonLogo').textContent = config.emoji;
@@ -237,7 +273,7 @@
     function renderServices() {
         const container = document.getElementById('serviceList');
         container.innerHTML = config.services.map(s => `
-            <div class="service-card" onclick="selectService(${s.id})">
+            <div class="service-card" data-service-id="${s.id}" onclick="selectService(${s.id})">
                 <div class="service-info">
                     <h3>${s.emoji} ${s.name}</h3>
                     <p>${s.duration} min</p>
@@ -249,8 +285,9 @@
 
     function selectService(id) {
         selection.service = config.services.find(s => s.id === id);
-        document.querySelectorAll('.service-card').forEach((c,i) => {
-            c.classList.toggle('selected', config.services[i].id === id);
+        // BUG#6 FIX: usa data-service-id para toggle sem depender de índice de array
+        document.querySelectorAll('.service-card').forEach(c => {
+            c.classList.toggle('selected', parseInt(c.dataset.serviceId) === id);
         });
         setTimeout(() => goStep(1), 200);
     }
@@ -258,7 +295,7 @@
     function renderProfessionals() {
         const container = document.getElementById('proList');
         container.innerHTML = config.professionals.map(p => `
-            <div class="pro-card" onclick="selectPro(${p.id})">
+            <div class="pro-card" data-pro-id="${p.id}" onclick="selectPro(${p.id})">
                 <div class="pro-avatar">${p.emoji}</div>
                 <h3>${p.name}</h3>
             </div>
@@ -267,8 +304,9 @@
 
     function selectPro(id) {
         selection.professional = config.professionals.find(p => p.id === id);
-        document.querySelectorAll('.pro-card').forEach((c,i) => {
-            c.classList.toggle('selected', config.professionals[i].id === id);
+        // BUG#6 FIX: usa data-pro-id para toggle sem depender de índice de array
+        document.querySelectorAll('.pro-card').forEach(c => {
+            c.classList.toggle('selected', parseInt(c.dataset.proId) === id);
         });
         setTimeout(() => goStep(2), 200);
     }
@@ -323,11 +361,14 @@
         }).join('');
     }
 
+    // BUG#4 FIX: lógica explícita para profissional 'Qualquer' (não depende de condição acidental)
     function getBookedSlots() {
         const bookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
         if (!selection.date) return [];
         const dateStr = selection.date.toISOString().split('T')[0];
-        return bookings.filter(b => b.date === dateStr && (!selection.professional || b.proId === selection.professional.id || selection.professional.name === 'Qualquer'))
+        const isAny = !selection.professional || selection.professional.name === 'Qualquer';
+        return bookings
+            .filter(b => b.date === dateStr && (isAny || b.proId === selection.professional.id))
             .map(b => b.time);
     }
 
@@ -366,6 +407,37 @@
         const phone = document.getElementById('clientPhone').value.trim();
         if (!name || !phone) { alert('Por favor, preencha seu nome e WhatsApp.'); return; }
 
+        // RISK#2 FIX: validação de número de telefone brasileiro (hardened)
+        const phoneClean = phone.replace(/\D/g, '');
+        const isBrazilian = phoneClean.length === 10 || phoneClean.length === 11;
+        if (!isBrazilian) {
+            alert('WhatsApp inválido. Use o formato (11) 99999-9999');
+            return;
+        }
+
+        // RISK#3 FIX: desabilita o botão para evitar duplo-clique
+        const btn = document.querySelector('#step3 .btn-primary');
+        if (btn) btn.disabled = true;
+
+        // BUG-C3 FIX: re-valida slot ANTES de persistir para eliminar race condition
+        const dateStr = selection.date.toISOString().split('T')[0];
+        const existingBookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
+        const isAny = !selection.professional || selection.professional.name === 'Qualquer';
+        
+        // Critical Section: Re-check slot availability
+        const slotTaken = existingBookings.some(b =>
+            b.date === dateStr &&
+            b.time === selection.time &&
+            (isAny || b.proId === selection.professional.id || b.pro === 'Qualquer')
+        );
+        
+        if (slotTaken) {
+            alert('Este horário acabou de ser reservado por outro cliente. Por favor, escolha outro horário.');
+            if (btn) btn.disabled = false;
+            goStep(2);
+            return;
+        }
+
         const booking = {
             id: Date.now(),
             service: selection.service.name,
@@ -373,7 +445,7 @@
             price: selection.service.price,
             pro: selection.professional.name,
             proId: selection.professional.id,
-            date: selection.date.toISOString().split('T')[0],
+            date: dateStr,
             time: selection.time,
             clientName: name,
             clientPhone: phone,
@@ -382,16 +454,64 @@
             status: 'confirmed'
         };
 
-        const bookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
-        bookings.push(booking);
-        localStorage.setItem(`agendai_${SALON_ID}_bookings`, JSON.stringify(bookings));
+        existingBookings.push(booking);
+        localStorage.setItem(`agendai_${SALON_ID}_bookings`, JSON.stringify(existingBookings));
+        localStorage.setItem(`agendai_new_booking_trigger`, Date.now());
 
         document.getElementById('okService').textContent = booking.service;
         document.getElementById('okDate').textContent = selection.date.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
         document.getElementById('okTime').textContent = booking.time;
         document.getElementById('okPro').textContent = booking.pro;
 
+        // REGISTRATION LOGIC
+        const email = document.getElementById('clientEmail').value.trim();
+        const existingUsers = JSON.parse(localStorage.getItem('agendai_users') || '{}');
+        if (email && !existingUsers[email]) {
+            document.getElementById('registrationBlock').style.display = 'block';
+        } else {
+            document.getElementById('portalBtnBlock').style.display = 'block';
+        }
+
         goStep(4);
+        spawnConfetti();
+    }
+
+    function createAccount() {
+        const email = document.getElementById('clientEmail').value.trim();
+        const name = document.getElementById('clientName').value.trim();
+        const phone = document.getElementById('clientPhone').value.trim();
+        const pass = document.getElementById('regPassword').value.trim();
+
+        if (!pass || pass.length < 4) {
+            alert('Por favor, crie uma senha com pelo menos 4 caracteres.');
+            return;
+        }
+
+        const users = JSON.parse(localStorage.getItem('agendai_users') || '{}');
+        users[email] = { name, phone, pass, createdAt: new Date().toISOString() };
+        localStorage.setItem('agendai_users', JSON.stringify(users));
+        
+        // Auto-login
+        localStorage.setItem('agendai_client_email', email);
+        localStorage.setItem('agendai_client_name', name);
+        localStorage.setItem('agendai_client_since', users[email].createdAt);
+
+        alert('Conta criada com sucesso!');
+        location.href = 'index.html';
+    }
+
+    function spawnConfetti() {
+        const colors = ['#8B5CF6', '#06B6D4', '#F472B6', '#10B981', '#FBBF24'];
+        for (let i = 0; i < 50; i++) {
+            const c = document.createElement('div');
+            c.className = 'confetti';
+            c.style.left = Math.random() * 100 + 'vw';
+            c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            c.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            c.style.animationDelay = (Math.random() * 2) + 's';
+            document.body.appendChild(c);
+            setTimeout(() => c.remove(), 5000);
+        }
     }
 
     function changeMonth(dir) {

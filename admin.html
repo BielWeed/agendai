@@ -7,17 +7,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #7C3AED; --primary-light: #A78BFA; --bg: #0F0F1A;
-            --bg-card: #1A1A2E; --bg-hover: #222240; --text: #F1F1F6; --text-muted: #9CA3AF;
+            --primary: #8B5CF6; --primary-light: #C4B5FD; --bg: #03030b;
+            --bg-card: rgba(15, 15, 35, 0.45); --bg-hover: rgba(34, 34, 64, 0.6); --text: #F1F1F6; --text-muted: #94A3B8;
             --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
-            --gradient: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%); --radius: 16px;
+            --gradient: linear-gradient(135deg, #06B6D4 0%, #8B5CF6 50%, #F472B6 100%); --radius: 20px;
+            --glass: blur(40px) saturate(220%);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
 
-        .sidebar { width: 240px; background: var(--bg-card); border-right: 1px solid rgba(255,255,255,0.05);
-            padding: 24px 16px; display: flex; flex-direction: column; position: fixed; height: 100vh; }
-        .sidebar-logo { font-size: 1.3rem; font-weight: 800; margin-bottom: 32px; text-align: center; }
+        .sidebar { width: 260px; background: rgba(8, 8, 20, 0.8); border-right: 1px solid rgba(255,255,255,0.05);
+            padding: 32px 20px; display: flex; flex-direction: column; position: fixed; height: 100vh; backdrop-filter: var(--glass); }
+        .sidebar-logo { font-size: 1.5rem; font-weight: 900; margin-bottom: 40px; text-align: center; letter-spacing: -0.02em; }
         .sidebar-logo span { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .nav-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 10px;
             color: var(--text-muted); cursor: pointer; transition: all 0.2s; font-size: 0.9rem; margin-bottom: 4px; }
@@ -87,15 +88,23 @@
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .content-grid { grid-template-columns: 1fr; }
         }
+        /* BUG#8 FIX: classe de highlight que estava sendo adicionada via JS mas não existia no CSS */
+        @keyframes highlightPulse {
+            0%   { box-shadow: 0 0 0 0 rgba(124,58,237,0.5); }
+            50%  { box-shadow: 0 0 24px 6px rgba(124,58,237,0.2); }
+            100% { box-shadow: none; }
+        }
+        .new-booking-highlight { animation: highlightPulse 2s ease; }
     </style>
 </head>
 <body>
     <aside class="sidebar">
         <div class="sidebar-logo">📅 Agend<span>AI</span></div>
-        <div class="nav-item active" onclick="showPage('dashboard')">📊 Dashboard</div>
-        <div class="nav-item" onclick="showPage('bookings')">📋 Agendamentos</div>
-        <div class="nav-item" onclick="showPage('config')">⚙️ Configurar</div>
-        <div class="nav-item" onclick="showPage('share')">🔗 Compartilhar</div>
+        <!-- BUG#1 FIX: passando event explicitamente para evitar dependência do `event` global implícito -->
+        <div class="nav-item active" onclick="showPage('dashboard', event)">📊 Dashboard</div>
+        <div class="nav-item" onclick="showPage('bookings', event)">📋 Agendamentos</div>
+        <div class="nav-item" onclick="showPage('config', event)">⚙️ Configurar</div>
+        <div class="nav-item" onclick="showPage('share', event)">🔗 Compartilhar</div>
         <div class="sidebar-footer">AgendAI v1.0<br>R$ 24,90/mês</div>
     </aside>
 
@@ -163,7 +172,8 @@
         <!-- Config Page -->
         <div id="pageConfig" style="display:none;">
             <div class="page-header"><h1>⚙️ Configurar Salão</h1></div>
-            <div class="card">
+            <!-- Dados básicos -->
+            <div class="card" style="margin-bottom:24px;">
                 <div class="card-header"><h2>Dados do Salão</h2></div>
                 <div class="setup-form">
                     <div class="input-row">
@@ -178,9 +188,33 @@
                         <label>WhatsApp do Salão</label>
                         <input type="tel" id="cfgPhone" placeholder="(11) 99999-9999">
                     </div>
-                    <button class="btn-sm" onclick="saveConfig()">Salvar Configurações</button>
                 </div>
             </div>
+            <!-- Serviços -->
+            <div class="card" style="margin-bottom:24px;">
+                <div class="card-header"><h2>✂️ Serviços</h2></div>
+                <div id="servicesList" style="margin-bottom:12px;"></div>
+                <div style="display:grid;grid-template-columns:1fr 80px 70px auto;gap:8px;align-items:end;">
+                    <div><label style="font-size:0.75rem;color:var(--text-muted);">Nome</label>
+                        <input type="text" id="svcName" placeholder="Ex: Corte Feminino" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit;outline:none;"></div>
+                    <div><label style="font-size:0.75rem;color:var(--text-muted);">Min</label>
+                        <input type="number" id="svcDur" placeholder="45" min="5" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit;outline:none;"></div>
+                    <div><label style="font-size:0.75rem;color:var(--text-muted);">R$</label>
+                        <input type="number" id="svcPrice" placeholder="80" min="0" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit;outline:none;"></div>
+                    <button class="btn-sm" style="margin-top:0;padding:8px 14px;" onclick="addService()">+ Add</button>
+                </div>
+            </div>
+            <!-- Profissionais -->
+            <div class="card" style="margin-bottom:24px;">
+                <div class="card-header"><h2>👤 Profissionais</h2></div>
+                <div id="prosList" style="margin-bottom:12px;"></div>
+                <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;">
+                    <div><label style="font-size:0.75rem;color:var(--text-muted);">Nome</label>
+                        <input type="text" id="proName" placeholder="Ex: Ana Paula" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit;outline:none;"></div>
+                    <button class="btn-sm" style="margin-top:0;padding:8px 14px;" onclick="addPro()">+ Add</button>
+                </div>
+            </div>
+            <button class="btn-sm" onclick="saveConfig()">💾 Salvar Todas as Configurações</button>
         </div>
 
         <!-- Share Page -->
@@ -210,6 +244,29 @@
             new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
         loadStats();
         loadUpcoming();
+        
+        // Listen for new bookings from the booking iframe
+        window.addEventListener('storage', (e) => {
+            if (e.key === `agendai_${SALON_ID}_bookings` || e.key === 'agendai_new_booking_trigger') {
+                refreshDashboard();
+            }
+        });
+    }
+
+    function refreshDashboard() {
+        loadStats();
+        loadUpcoming();
+        // Add a visual feedback that things updated (Zero-Jank approach)
+        const container = document.getElementById('upcomingList');
+        if (container) {
+            container.style.transition = 'opacity 0.2s ease';
+            container.style.opacity = '0.5';
+            setTimeout(() => {
+                container.style.opacity = '1';
+                container.classList.add('new-booking-highlight');
+                setTimeout(() => container.classList.remove('new-booking-highlight'), 2000);
+            }, 100);
+        }
     }
 
     function getBookings() {
@@ -221,9 +278,12 @@
         const today = new Date().toISOString().split('T')[0];
         const todayBookings = bookings.filter(b => b.date === today);
 
+        // BUG#5 FIX: setHours(0,0,0,0) para evitar erro de fuso horário na comparação de datas
         const weekStart = new Date();
         weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-        const weekBookings = bookings.filter(b => new Date(b.date) >= weekStart);
+        weekStart.setHours(0, 0, 0, 0);
+        // Usa 'T12:00:00' para forçar interpretação local (evita UTC midnight vs local midnight)
+        const weekBookings = bookings.filter(b => new Date(b.date + 'T12:00:00') >= weekStart);
 
         const uniquePhones = new Set(bookings.map(b => b.clientPhone));
 
@@ -255,8 +315,10 @@
             </div>
         `).join('');
 
-        // Also update all bookings page
-        document.getElementById('allBookingsList').innerHTML = bookings.sort((a, b) => b.createdAt?.localeCompare(a.createdAt)).map(b => `
+        // BUG#7 FIX: sort com campo opcional usando fallback para string vazia (evita undefined → ordem não-determinística)
+        document.getElementById('allBookingsList').innerHTML = bookings
+            .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
+            .map(b => `
             <div class="booking-row">
                 <span class="booking-time">${b.time}</span>
                 <div class="booking-info">
@@ -268,37 +330,137 @@
         `).join('');
     }
 
-    function showPage(page) {
-        document.querySelectorAll('.main > div').forEach(d => d.style.display = 'none');
+    // BUG#1 FIX: recebe `ev` explicitamente (event global implícito é deprecado e não confiável)
+    // BUG#2 FIX: seletor [id^="page"] é específico e não afeta elementos não-page
+    function showPage(page, ev) {
+        document.querySelectorAll('[id^="page"]').forEach(d => d.style.display = 'none');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
         const pages = { dashboard: 'pageDashboard', bookings: 'pageBookings', config: 'pageConfig', share: 'pageShare' };
-        document.getElementById(pages[page]).style.display = 'block';
-        event.target.classList.add('active');
+        const pageEl = document.getElementById(pages[page]);
+        if (pageEl) pageEl.style.display = 'block';
+        // Sobe para o .nav-item mesmo que o clique tenha sido num filho (emoji, etc)
+        const navItem = ev && ev.target ? ev.target.closest('.nav-item') : null;
+        if (navItem) navItem.classList.add('active');
 
         if (page === 'bookings') loadUpcoming();
+        if (page === 'config') loadConfigPage();
     }
 
     function copyLink() {
-        const input = document.getElementById('shareLink');
-        input.select();
-        document.execCommand('copy');
+        // Copia do campo visível (shareLink ou shareLink2 dependendo da página ativa)
+        const input = document.getElementById('shareLink2') || document.getElementById('shareLink');
+        if (input) { input.select(); document.execCommand('copy'); }
         alert('Link copiado!');
     }
 
-    function shareWhatsApp() {
-        const link = document.getElementById('shareLink').value;
-        window.open(`https://wa.me/?text=Agende seu horário online: ${encodeURIComponent(link)}`, '_blank');
+    // BUG#3 FIX: busca qualquer um dos dois shareLink inputs (dashboard ou share page)
+    function _getShareLink() {
+        const el = document.getElementById('shareLink2') || document.getElementById('shareLink');
+        return el ? el.value : 'booking.html?salon=demo';
     }
 
+    function shareWhatsApp() {
+        const link = _getShareLink();
+        window.open(`https://wa.me/?text=${encodeURIComponent('Agende seu horário online: ' + link)}`, '_blank');
+    }
+
+    // BUG#10 FIX: função shareInstagram estava sendo chamada mas não existia → ReferenceError
+    function shareInstagram() {
+        const link = _getShareLink();
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(link).then(() => alert('Link copiado! Cole na bio do Instagram 📸'));
+        } else {
+            const tmp = document.createElement('input');
+            document.body.appendChild(tmp);
+            tmp.value = link;
+            tmp.select();
+            document.execCommand('copy');
+            document.body.removeChild(tmp);
+            alert('Link copiado! Cole na bio do Instagram 📸');
+        }
+    }
+
+    // === CONFIG: Estado local de serviços/profissionais ===
+    let cfgServices = [];
+    let cfgPros = [];
+
+    function loadConfigPage() {
+        const saved = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_config`) || 'null');
+        if (saved) {
+            document.getElementById('cfgName').value  = saved.name    || '';
+            document.getElementById('cfgAddr').value  = saved.address || '';
+            document.getElementById('cfgPhone').value = saved.phone   || '';
+            cfgServices = Array.isArray(saved.services)     ? [...saved.services]     : [];
+            cfgPros     = Array.isArray(saved.professionals) ? saved.professionals.filter(p => p.name !== 'Qualquer') : [];
+        }
+        renderCfgServices();
+        renderCfgPros();
+    }
+
+    function renderCfgServices() {
+        const el = document.getElementById('servicesList');
+        if (!el) return;
+        if (cfgServices.length === 0) { el.innerHTML = '<p style="color:var(--text-muted);font-size:0.8rem;">Nenhum serviço cadastrado ainda.</p>'; return; }
+        el.innerHTML = cfgServices.map((s, i) => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span style="font-size:0.9rem;">${s.emoji || '✂️'} ${s.name} — ${s.duration}min — R$ ${s.price}</span>
+                <button onclick="removeService(${i})" style="background:rgba(239,68,68,0.15);border:none;color:#EF4444;padding:4px 10px;border-radius:6px;cursor:pointer;">✕</button>
+            </div>
+        `).join('');
+    }
+
+    function renderCfgPros() {
+        const el = document.getElementById('prosList');
+        if (!el) return;
+        if (cfgPros.length === 0) { el.innerHTML = '<p style="color:var(--text-muted);font-size:0.8rem;">Nenhum profissional cadastrado ainda.</p>'; return; }
+        el.innerHTML = cfgPros.map((p, i) => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span style="font-size:0.9rem;">👤 ${p.name}</span>
+                <button onclick="removePro(${i})" style="background:rgba(239,68,68,0.15);border:none;color:#EF4444;padding:4px 10px;border-radius:6px;cursor:pointer;">✕</button>
+            </div>
+        `).join('');
+    }
+
+    function addService() {
+        const name  = document.getElementById('svcName').value.trim();
+        const dur   = parseInt(document.getElementById('svcDur').value);
+        const price = parseInt(document.getElementById('svcPrice').value);
+        if (!name || !dur || !price) { alert('Preencha nome, duração e preço.'); return; }
+        cfgServices.push({ id: Date.now(), name, duration: dur, price, emoji: '✂️' });
+        document.getElementById('svcName').value = '';
+        document.getElementById('svcDur').value  = '';
+        document.getElementById('svcPrice').value = '';
+        renderCfgServices();
+    }
+
+    function removeService(i) { cfgServices.splice(i, 1); renderCfgServices(); }
+
+    function addPro() {
+        const name = document.getElementById('proName').value.trim();
+        if (!name) { alert('Digite o nome do profissional.'); return; }
+        cfgPros.push({ id: Date.now(), name, emoji: '👤' });
+        document.getElementById('proName').value = '';
+        renderCfgPros();
+    }
+
+    function removePro(i) { cfgPros.splice(i, 1); renderCfgPros(); }
+
     function saveConfig() {
+        // BUG-C2 FIX: salva TODOS os campos necessários para booking.html funcionar corretamente
+        const prosWithQualquer = [...cfgPros, { id: 0, name: 'Qualquer', emoji: '🔄' }];
         const config = {
-            name: document.getElementById('cfgName').value,
-            address: document.getElementById('cfgAddr').value,
-            phone: document.getElementById('cfgPhone').value,
+            name:          document.getElementById('cfgName').value.trim(),
+            address:       document.getElementById('cfgAddr').value.trim(),
+            phone:         document.getElementById('cfgPhone').value.trim(),
+            services:      cfgServices,
+            professionals: prosWithQualquer,
+            hours:         ['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00'],
+            closedDays:    [0],
         };
+        if (!config.name) { alert('O nome do salão é obrigatório.'); return; }
         localStorage.setItem(`agendai_${SALON_ID}_config`, JSON.stringify(config));
-        alert('Configurações salvas!');
+        alert('✅ Configurações salvas! Seus clientes já verão as informações atualizadas.');
     }
 
     init();
