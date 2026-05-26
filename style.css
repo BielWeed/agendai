@@ -1,35 +1,35 @@
 /* === DESIGN SYSTEM ELITE 2026 (ULTRA-PREMIUM) === */
 :root {
   /* Ultra-Premium Palette - Elite 2026 */
-  --p: #ffffff; /* Primary text / accents */
-  --pl: #a1a1aa; /* Muted text */
-  --pd: #18181b; /* Dark surfaces */
-  --acc: #3b82f6; /* Blue accent */
-  --acc2: #8b5cf6; /* Violet accent */
+  --p: #ffffff; 
+  --pl: #94a3b8; 
+  --pd: #0a0a14; 
+  --acc: #8b5cf6; 
+  --acc2: #06b6d4; 
+  --acc3: #ec4899;
   
-  --holographic: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-  --shimmer-grad: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  --holographic: linear-gradient(135deg, var(--acc) 0%, var(--acc2) 50%, var(--acc3) 100%);
+  --shimmer-grad: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
   
-  --bg: #030008; /* Extremely deep violet pure black */
-  --bg2: #09090b;
-  --card: rgba(15, 15, 20, 0.4); 
+  --bg: #03030b; 
+  --bg2: #0a0a1f;
+  --card: rgba(15, 15, 35, 0.4); 
   --card-border: rgba(255, 255, 255, 0.08);
-  --text: #ffffff; 
-  --muted: #a1a1aa;
+  --text: #f8fafc; 
+  --muted: #64748b;
   --success: #10b981;
   
   --grad: var(--holographic);
-  --grad2: linear-gradient(135deg, #0ea5e9, #10b981);
-  --grad3: linear-gradient(135deg, #f43f5e, #f59e0b);
+  --grad-surface: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.05));
   
-  --r: 28px; --r2: 36px;
+  --r: 24px; 
+  --r2: 32px;
   --glass: blur(40px) saturate(200%);
   --glass-intense: blur(80px) saturate(250%) contrast(110%);
-  --shadow-p: 0 30px 100px -20px rgba(59, 130, 246, 0.3);
-  --shadow-inner: inset 0 1px 1px rgba(255, 255, 255, 0.15), inset 0 0 40px rgba(255, 255, 255, 0.02);
-  --glow: 0 0 40px rgba(139, 92, 246, 0.2);
+  --shadow-p: 0 30px 100px -20px rgba(139, 92, 246, 0.3);
+  --shadow-inner: inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 0 40px rgba(255, 255, 255, 0.02);
+  --glow: 0 0 40px rgba(139, 92, 246, 0.15);
   
-  /* Performance Tokens */
   --gpu: translate3d(0,0,0);
 }
 
@@ -42,6 +42,7 @@ body {
   color: var(--text);
   overflow-x: hidden;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* === TYPOGRAPHY === */

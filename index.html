@@ -3,577 +3,540 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgendAI — Portal do Cliente</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>AgendAI — Reserva de Horário</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #8B5CF6; --primary-light: #C4B5FD; --primary-dark: #4C1D95;
-            --bg: #03030b; --bg-card: rgba(15, 15, 35, 0.5); --text: #F1F1F6; --text-muted: #94A3B8;
-            --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
-            --gradient: linear-gradient(135deg, #06B6D4 0%, #8B5CF6 50%, #F472B6 100%);
-            --radius: 24px;
-            --glass: blur(60px) saturate(240%);
+            --p: #ffffff; --pl: #94a3b8; --bg: #03030b;
+            --bg-card: rgba(15, 15, 35, 0.4); --text: #f8fafc; --muted: #64748b;
+            --acc: #8b5cf6; --acc2: #06b6d4; --success: #10b981;
+            --gradient: linear-gradient(135deg, var(--acc) 0%, var(--acc2) 100%);
+            --glass: blur(40px) saturate(200%);
+            --r: 24px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        body { 
+            font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); 
+            min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+        }
 
-        /* Navbar */
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: var(--glass); position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .logo-icon { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .user-menu { display: flex; align-items: center; gap: 12px; }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-weight: 600; }
-        .logout-btn { background: none; border: 1px solid rgba(255,255,255,0.2); color: var(--text); padding: 8px 16px; border-radius: 50px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
-        .logout-btn:hover { background: rgba(255,255,255,0.1); }
+        /* Background Effects */
+        .orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.2; pointer-events: none; z-index: -1; animation: orbit 15s ease-in-out infinite; }
+        .orb-1 { width: 400px; height: 400px; background: var(--acc); top: -100px; left: -100px; }
+        .orb-2 { width: 350px; height: 350px; background: var(--acc2); bottom: -50px; right: -50px; animation-delay: -3s; }
+        @keyframes orbit { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px, 20px) scale(1.1); } }
 
-        .container { max-width: 600px; margin: 0 auto; padding: 30px 20px 100px; animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
-        .welcome-header { margin-bottom: 30px; }
-        .welcome-header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
-        .welcome-header p { color: var(--text-muted); font-size: 0.95rem; }
+        .container { 
+            max-width: 480px; margin: 0 auto; padding: 40px 20px; 
+            animation: fadeUp 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
 
-        .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-        .new-booking-btn { background: var(--gradient); border: none; color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; transition: transform 0.2s; }
-        .new-booking-btn:hover { transform: scale(1.05); }
+        .salon-header { text-align: center; padding-bottom: 32px; }
+        .salon-logo { 
+            width: 80px; height: 80px; border-radius: 24px; background: var(--gradient);
+            display: flex; align-items: center; justify-content: center; font-size: 2.5rem; 
+            margin: 0 auto 16px; box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .salon-header h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 4px; }
+        .salon-header p { color: var(--pl); font-size: 0.95rem; font-weight: 500; }
 
-        /* Cards */
-        .card { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; backdrop-filter: var(--glass); transition: all 0.3s; }
-        .card:hover { border-color: rgba(139, 92, 246, 0.3); }
+        .step-indicator { display: flex; justify-content: center; gap: 10px; margin-bottom: 40px; }
+        .step-dot { 
+            height: 6px; width: 40px; border-radius: 10px; 
+            background: rgba(255,255,255,0.05); transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); 
+        }
+        .step-dot.active { background: var(--acc); width: 80px; box-shadow: 0 0 15px var(--acc); }
+        .step-dot.done { background: var(--success); }
+
+        .glass-panel {
+            background: var(--bg-card); border-radius: var(--r); padding: 32px;
+            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: var(--glass);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
+        }
+
+        .step { display: none; }
+        .step.active { display: block; animation: fadeUp 0.5s ease; }
+
+        .section-title { 
+            font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; 
+            color: var(--p); letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px;
+        }
+
+        .service-card { 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 24px; margin-bottom: 16px; background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .service-card:hover, .service-card.selected { 
+            background: rgba(139, 92, 246, 0.08); border-color: rgba(139, 92, 246, 0.3);
+            transform: translateY(-4px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .service-info h3 { font-size: 1.05rem; font-weight: 600; color: var(--p); }
+        .service-info p { font-size: 0.85rem; color: var(--pl); margin-top: 4px; font-weight: 500; }
+        .service-price { font-weight: 800; color: var(--acc2); font-size: 1.2rem; }
+
+        .pro-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .pro-card { 
+            text-align: center; padding: 24px 16px; background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; cursor: pointer; transition: all 0.4s; 
+        }
+        .pro-card:hover, .pro-card.selected { 
+            background: rgba(139, 92, 246, 0.08); border-color: rgba(139, 92, 246, 0.3);
+            transform: translateY(-4px); 
+        }
+        .pro-avatar { 
+            width: 64px; height: 64px; border-radius: 20px; background: var(--gradient);
+            display: flex; align-items: center; justify-content: center; font-size: 1.8rem; 
+            margin: 0 auto 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .pro-card h3 { font-size: 0.95rem; font-weight: 600; }
+
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .cal-nav { 
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); color: var(--p);
+            width: 40px; height: 40px; border-radius: 12px; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .cal-nav:hover { background: rgba(255,255,255,0.08); border-color: var(--acc); }
+        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.75rem; color: var(--muted); margin-bottom: 12px; font-weight: 700; text-transform: uppercase; }
+        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+        .day-cell { 
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: 0.3s; 
+            border: 1px solid transparent;
+        }
+        .day-cell:hover:not(.disabled) { background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.2); }
+        .day-cell.selected { background: var(--acc); color: white; font-weight: 800; box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4); }
+        .day-cell.disabled { opacity: 0.15; cursor: default; }
+        .day-cell.today { border-color: var(--acc2); color: var(--acc2); }
+
+        .times-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+        .time-btn { 
+            padding: 14px; text-align: center; background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; cursor: pointer;
+            transition: all 0.3s; font-size: 0.95rem; font-weight: 700; color: var(--pl); 
+        }
+        .time-btn:hover:not(.unavailable), .time-btn.selected { 
+            border-color: var(--acc2); background: rgba(6, 182, 212, 0.1); color: var(--p); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .time-btn.unavailable { opacity: 0.15; cursor: default; text-decoration: line-through; }
+
+        .summary-card { 
+            background: rgba(255,255,255,0.02); border-radius: 20px; padding: 24px;
+            border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px;
+        }
+        .summary-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.95rem; }
+        .summary-row:last-child { border: none; }
+        .summary-label { color: var(--muted); font-weight: 500; }
+        .summary-total { font-size: 1.4rem; font-weight: 900; color: var(--success); }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--pl); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .input-group input { 
+            width: 100%; padding: 16px 20px; background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: var(--p);
+            font-size: 1rem; font-family: inherit; outline: none; transition: all 0.3s; 
+        }
+        .input-group input:focus { border-color: var(--acc); box-shadow: 0 0 20px rgba(139, 92, 246, 0.2); }
+
+        .btn { 
+            display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 18px; 
+            border: none; border-radius: 50px; font-size: 1.1rem; font-weight: 800; cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); margin-top: 24px; font-family: inherit; 
+        }
+        .btn-primary { 
+            background: var(--gradient); color: white; 
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.4); border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 25px 50px rgba(139, 92, 246, 0.6); }
+        .btn-back { background: rgba(255,255,255,0.03); color: var(--pl); border: 1px solid rgba(255,255,255,0.05); margin-top: 12px; }
+
+        .success-screen { text-align: center; padding: 40px 0; }
+        .success-icon { 
+            font-size: 4rem; width: 100px; height: 100px; background: rgba(16, 185, 129, 0.1); 
+            border: 2px solid var(--success); border-radius: 50%; display: flex; 
+            align-items: center; justify-content: center; margin: 0 auto 24px;
+            animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            color: var(--success);
+        }
+        .success-screen h2 { font-size: 2rem; font-weight: 800; color: var(--p); margin-bottom: 12px; }
+        .success-screen p { color: var(--pl); font-size: 1rem; line-height: 1.6; }
+
+        .powered-by { text-align: center; padding: 40px 20px; font-size: 0.8rem; color: var(--muted); opacity: 0.6; }
+        .powered-by a { color: var(--acc2); text-decoration: none; font-weight: 700; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounceIn { 0% { transform: scale(0); } 60% { transform: scale(1.1); } 100% { transform: scale(1); } }
         
-        /* Highlighted Appointment */
-        .next-appointment { position: relative; overflow: hidden; }
-        .next-appointment::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--gradient); }
-        .apt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-        .apt-service { font-size: 1.2rem; font-weight: 600; }
-        .apt-salon { color: var(--text-muted); font-size: 0.85rem; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
-        .apt-status { padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; }
-        .status-confirmed { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
-        .status-past { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); border: 1px solid rgba(255, 255, 255, 0.1); }
-
-        .apt-details { display: flex; gap: 20px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .detail-item { display: flex; flex-direction: column; gap: 4px; }
-        .detail-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .detail-value { font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 6px; }
-
-        .apt-actions { display: flex; gap: 10px; margin-top: 20px; }
-        .action-btn { flex: 1; padding: 10px; border-radius: 12px; font-size: 0.85rem; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.2s; border: none; }
-        .btn-reschedule { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid rgba(255,255,255,0.1); }
-        .btn-reschedule:hover { background: rgba(255,255,255,0.1); }
-        .btn-cancel { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
-        .btn-cancel:hover { background: rgba(239, 68, 68, 0.2); }
-
-        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
-        .empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Quick Actions */
-        .quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px; }
-        .action-card { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 16px 10px; text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .action-card:hover { background: rgba(255,255,255,0.05); transform: translateY(-3px); border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        .action-icon { width: 44px; height: 44px; border-radius: 14px; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 1px solid rgba(255,255,255,0.05); transition: transform 0.3s; }
-        .action-card:hover .action-icon { transform: scale(1.1) rotate(5deg); background: rgba(139, 92, 246, 0.1); }
-        .action-text { font-size: 0.75rem; font-weight: 500; color: var(--text-muted); }
-        .action-card:hover .action-text { color: var(--text); }
-        
-        /* Shimmer Loading */
-        .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%); background-size: 400% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
-        @keyframes shimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
-        
-        /* Badges */
-        .badge { background: var(--gradient); padding: 2px 6px; border-radius: 10px; font-size: 0.6rem; font-weight: 800; color: white; position: absolute; top: -5px; right: -5px; border: 2px solid var(--bg); box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        .action-icon-wrapper { position: relative; }
-
-        /* Auth Modal Overlay */
-        .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 1000; transition: opacity 0.3s; }
-        .auth-modal { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius); padding: 30px; width: 90%; max-width: 400px; text-align: center; }
-        .auth-modal h2 { margin-bottom: 20px; font-size: 1.5rem; }
-        .input-group { margin-bottom: 16px; text-align: left; }
-        .input-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; }
-        .input-group input { width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: var(--text); outline: none; transition: border 0.2s; }
-        .input-group input:focus { border-color: var(--primary); }
-        .btn-auth { width: 100%; padding: 14px; background: var(--gradient); border: none; border-radius: 50px; color: white; font-weight: 600; cursor: pointer; margin-top: 10px; font-family: inherit; font-size: 0.95rem; }
-
-        /* Toast */
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
-        .toast { padding: 14px 20px; border-radius: 14px; font-size: 0.85rem; font-weight: 500; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); animation: toastIn 0.4s cubic-bezier(0.22,1,0.36,1), toastOut 0.3s 2.7s ease forwards; display: flex; align-items: center; gap: 10px; max-width: 340px; }
-        .toast-success { background: rgba(16,185,129,0.15); color: var(--success); border-color: rgba(16,185,129,0.3); }
-        .toast-error { background: rgba(239,68,68,0.15); color: var(--danger); border-color: rgba(239,68,68,0.3); }
-        .toast-info { background: rgba(139,92,246,0.15); color: var(--primary-light); border-color: rgba(139,92,246,0.3); }
-        @keyframes toastIn { from { opacity:0; transform: translateX(60px); } to { opacity:1; transform: translateX(0); } }
-        @keyframes toastOut { to { opacity:0; transform: translateX(60px); } }
-
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(3,3,11,0.92); backdrop-filter: blur(30px) saturate(200%); border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-around; padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); z-index: 100; }
-        .bnav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 16px; border-radius: 12px; cursor: pointer; transition: all 0.2s; color: var(--text-muted); font-size: 0.65rem; font-weight: 500; }
-        .bnav-item.active { color: var(--primary-light); }
-        .bnav-item.active .bnav-icon { background: rgba(139,92,246,0.15); }
-        .bnav-icon { font-size: 1.2rem; width: 36px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 10px; transition: background 0.2s; }
-        body { padding-bottom: 80px; }
-
-        /* Cancel Modal */
-        .cancel-modal-content { text-align: center; }
-        .cancel-modal-content .cancel-icon { font-size: 3rem; margin-bottom: 12px; display: block; }
-        .cancel-modal-content p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5; }
-        .modal-actions { display: flex; gap: 10px; }
-        .modal-actions button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 0.9rem; transition: all 0.2s; }
-        .btn-modal-cancel { background: none; border: 1px solid rgba(255,255,255,0.15); color: var(--text); }
-        .btn-modal-confirm-danger { background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); color: var(--danger); }
-        .btn-modal-confirm-danger:hover { background: rgba(239,68,68,0.35); }
-
-        /* Star Rating */
-        .star-rating { display: flex; gap: 4px; margin-top: 8px; }
-        .star-rating .star { font-size: 1.1rem; cursor: pointer; transition: transform 0.15s; filter: grayscale(1) opacity(0.3); }
-        .star-rating .star.active { filter: none; }
-        .star-rating .star:hover { transform: scale(1.3); }
-        .rated-badge { font-size: 0.7rem; color: var(--warning); margin-top: 4px; }
-
-        /* Profile Page */
-        .page { display: none; }
-        .page.active { display: block; }
-        .profile-avatar-lg { width: 80px; height: 80px; border-radius: 50%; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; margin: 0 auto 16px; position: relative; box-shadow: 0 0 30px rgba(139,92,246,0.3); }
-        .profile-section { margin-bottom: 24px; }
-        .profile-section h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.75rem; }
-        .profile-field { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .profile-field-label { font-size: 0.85rem; color: var(--text-muted); }
-        .profile-field-value { font-size: 0.9rem; font-weight: 500; }
-
-        /* VIP Detail */
-        .vip-progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; margin-top: 10px; }
-        .vip-progress-fill { height: 100%; background: var(--gradient); border-radius: 4px; transition: width 0.6s cubic-bezier(0.22,1,0.36,1); }
-        .vip-milestones { display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.65rem; color: var(--text-muted); }
+        .confetti { position: fixed; width: 8px; height: 8px; top: -10px; z-index: 1000; border-radius: 2px; animation: confettiFall 3s linear infinite; }
+        @keyframes confettiFall { 0% { transform: translateY(0) rotate(0); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
     </style>
 </head>
 <body>
-    <div class="toast-container" id="toastContainer"></div>
-    <!-- Auth Modal (Shown if not logged in) -->
-    <div id="authOverlay" class="auth-overlay">
-        <div class="auth-modal">
-            <h2>Acessar Área do Cliente</h2>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Faça login para ver seus agendamentos</p>
-            <div class="input-group">
-                <label>E-mail</label>
-                <input type="email" id="loginEmail" placeholder="seu@email.com">
-            </div>
-            <div class="input-group" id="passGroup" style="display: none;">
-                <label>Senha</label>
-                <input type="password" id="loginPassword" placeholder="Sua senha">
-            </div>
-            <button class="btn-auth" id="btnLogin" onclick="login()">Continuar</button>
-            <p style="margin-top: 15px; font-size: 0.8rem; color: var(--text-muted);">Ainda não tem conta? <br><a href="booking.html" style="color: var(--primary-light);">Agende um horário para criar!</a></p>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="container">
+        <div class="salon-header">
+            <div class="salon-logo" id="salonLogo">✂️</div>
+            <h1 id="salonName">Carregando...</h1>
+            <p id="salonAddr"></p>
         </div>
+
+        <div class="step-indicator">
+            <div class="step-dot active" id="dot0"></div>
+            <div class="step-dot" id="dot1"></div>
+            <div class="step-dot" id="dot2"></div>
+            <div class="step-dot" id="dot3"></div>
+            <div class="step-dot" id="dot4"></div>
+        </div>
+
+        <div class="glass-panel">
+            <!-- Step 0: Services -->
+            <div class="step active" id="step0">
+                <p class="section-title">Escolha o serviço</p>
+                <div id="serviceList"></div>
+            </div>
+
+            <!-- Step 1: Professional -->
+            <div class="step" id="step1">
+                <p class="section-title">Escolha o profissional</p>
+                <div class="pro-grid" id="proList"></div>
+                <button class="btn btn-back" onclick="goStep(0)">← Voltar</button>
+            </div>
+
+            <!-- Step 2: Date & Time -->
+            <div class="step" id="step2">
+                <div class="cal-header">
+                    <button class="cal-nav" onclick="changeMonth(-1)">←</button>
+                    <h3 id="calMonthYear"></h3>
+                    <button class="cal-nav" onclick="changeMonth(1)">→</button>
+                </div>
+                <div class="weekdays"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div>
+                <div class="days-grid" id="daysGrid"></div>
+                <div id="timesSection" style="display:none;">
+                    <p class="section-title" style="margin-top:20px;">Horários disponíveis</p>
+                    <div class="times-grid" id="timesGrid"></div>
+                </div>
+                <button class="btn btn-back" onclick="goStep(1)">← Voltar</button>
+            </div>
+
+            <!-- Step 3: Client Info -->
+            <div class="step" id="step3">
+                <p class="section-title">Seus dados</p>
+                <div class="input-group">
+                    <label>Nome completo</label>
+                    <input type="text" id="clientName" placeholder="Ex: Maria Silva">
+                </div>
+                <div class="input-group">
+                    <label>WhatsApp</label>
+                    <input type="tel" id="clientPhone" placeholder="(11) 99999-9999">
+                </div>
+                <div class="input-group">
+                    <label>Email (opcional)</label>
+                    <input type="email" id="clientEmail" placeholder="email@exemplo.com">
+                </div>
+                <div class="summary-card" style="margin-top:20px;">
+                    <p class="section-title" style="margin-bottom:12px;">Resumo</p>
+                    <div class="summary-row"><span class="summary-label">Serviço</span><span id="sumService"></span></div>
+                    <div class="summary-row"><span class="summary-label">Profissional</span><span id="sumPro"></span></div>
+                    <div class="summary-row"><span class="summary-label">Data</span><span id="sumDate"></span></div>
+                    <div class="summary-row"><span class="summary-label">Horário</span><span id="sumTime"></span></div>
+                    <div class="summary-row"><span class="summary-label">Valor</span><span class="summary-total" id="sumPrice"></span></div>
+                </div>
+                <button class="btn btn-primary" onclick="confirmBooking()">Finalizar Reserva</button>
+                <button class="btn btn-back" onclick="goStep(2)">← Voltar</button>
+            </div>
+
+            <!-- Step 4: Success -->
+            <div class="step" id="step4">
+                <div class="success-screen">
+                    <div class="success-icon">✓</div>
+                    <h2>Reserva Confirmada!</h2>
+                    <p>Seu horário foi agendado com sucesso. Você receberá um lembrete em breve.</p>
+                    <div class="success-details" id="successDetails" style="display:none"></div>
+                    <button class="btn btn-primary" onclick="window.location.reload()" style="margin-top:32px;">Fazer Novo Agendamento</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="powered-by">Powered by <a href="#">AgendAI</a> Elite</div>
     </div>
-
-    <!-- Reschedule Modal -->
-    <div id="rescheduleOverlay" class="auth-overlay" style="display: none; z-index: 1001;">
-        <div class="auth-modal">
-            <h2>Reagendar</h2>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Escolha a nova data e horário para o serviço <br><strong id="rescheduleService" style="color: var(--text);"></strong></p>
-            <input type="hidden" id="rescheduleBookingId">
-            <div class="input-group">
-                <label>Nova Data</label>
-                <input type="date" id="rescheduleDate" style="color-scheme: dark;">
-            </div>
-            <div class="input-group">
-                <label>Novo Horário</label>
-                <input type="time" id="rescheduleTime" step="1800" style="color-scheme: dark;">
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="action-btn btn-reschedule" onclick="closeRescheduleModal()">Cancelar</button>
-                <button class="action-btn btn-auth" style="margin-top: 0; width: auto; flex: 1;" onclick="confirmReschedule()">Confirmar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cancel Confirmation Modal -->
-    <div id="cancelOverlay" class="auth-overlay" style="display: none; z-index: 1002;">
-        <div class="auth-modal">
-            <div class="cancel-modal-content">
-                <span class="cancel-icon">⚠️</span>
-                <h2>Cancelar Agendamento?</h2>
-                <p>Tem certeza que deseja cancelar <strong id="cancelServiceName"></strong>? Esta ação não pode ser desfeita.</p>
-                <input type="hidden" id="cancelBookingId">
-                <div class="modal-actions">
-                    <button class="btn-modal-cancel" onclick="closeCancelModal()">Manter</button>
-                    <button class="btn-modal-confirm-danger" onclick="confirmCancel()">Sim, Cancelar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div id="mainContent" style="display: none;">
-        <nav class="navbar">
-            <div class="logo">
-                <span>Agend</span><span class="logo-icon">AI</span>
-            </div>
-            <div class="user-menu">
-                <div class="user-avatar" id="userInitials">C</div>
-                <button class="logout-btn" onclick="logout()">Sair</button>
-            </div>
-        </nav>
-
-        <div class="container">
-            <div class="welcome-header">
-                <h1>Olá, <span id="userNameDisplay">Cliente</span>! 👋</h1>
-                <p>Gerencie seus agendamentos e histórico.</p>
-            </div>
-            
-            <!-- Quick Actions -->
-            <div class="quick-actions">
-                <div class="action-card" onclick="alert('Funcionalidade de Indicação será lançada na v2!')">
-                    <div class="action-icon-wrapper">
-                        <div class="action-icon">🎁</div>
-                        <div class="badge">NOVO</div>
-                    </div>
-                    <span class="action-text">Indicar Amigo</span>
-                </div>
-                <div class="action-card" onclick="alert('Central de Pacotes em breve!')">
-                    <div class="action-icon">📦</div>
-                    <span class="action-text">Pacotes</span>
-                </div>
-                <div class="action-card" onclick="alert('Histórico financeiro em breve!')">
-                    <div class="action-icon">💳</div>
-                    <span class="action-text">Pagamentos</span>
-                </div>
-            </div>
-
-            <!-- VIP Club Widget -->
-            <div class="card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.05)); border: 1px solid rgba(139, 92, 246, 0.2); margin-bottom: 30px;">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <h3 style="font-size: 1rem; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;"><span style="color: #F59E0B;">⭐</span> Clube VIP</h3>
-                        <p style="font-size: 0.8rem; color: var(--text-muted);" id="vipText">Faltam <span id="vipRemaining">2</span> visitas para um serviço grátis</p>
-                    </div>
-                    <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(139, 92, 246, 0.2); display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary-light); border: 2px solid var(--primary); box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);" id="vipCounter">
-                        0/10
-                    </div>
-                </div>
-                <div class="vip-progress-bar"><div class="vip-progress-fill" id="vipProgressFill" style="width: 0%;"></div></div>
-                <div class="vip-milestones"><span>0</span><span>5 — 10% off</span><span>10 — Grátis!</span></div>
-            </div>
-
-            <div class="section-title">
-                <span>Próximo Agendamento</span>
-                <a href="booking.html" class="new-booking-btn">+ Novo</a>
-            </div>
-
-            <div id="nextBookingContainer">
-                <!-- Injected via JS -->
-            </div>
-
-            <div class="section-title" style="margin-top: 40px;">
-                <span>Histórico Recente</span>
-            </div>
-
-            <div id="historyContainer">
-                <!-- Injected via JS -->
-            </div>
-        </div>
-
-        <!-- Profile Page -->
-        <div class="container page" id="profilePage">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <div class="profile-avatar-lg" id="profileAvatar">C</div>
-                <h2 id="profileName" style="font-size: 1.3rem; font-weight: 700;">Cliente</h2>
-                <p style="color: var(--text-muted); font-size: 0.85rem;" id="profileEmail">email@exemplo.com</p>
-            </div>
-            <div class="card profile-section">
-                <h3>Informações Pessoais</h3>
-                <div class="profile-field"><span class="profile-field-label">Nome</span><span class="profile-field-value" id="pName">—</span></div>
-                <div class="profile-field"><span class="profile-field-label">Email</span><span class="profile-field-value" id="pEmail">—</span></div>
-                <div class="profile-field"><span class="profile-field-label">Membro desde</span><span class="profile-field-value" id="pSince">—</span></div>
-            </div>
-            <div class="card profile-section">
-                <h3>Estatísticas</h3>
-                <div class="profile-field"><span class="profile-field-label">Total de agendamentos</span><span class="profile-field-value" id="pTotal">0</span></div>
-                <div class="profile-field"><span class="profile-field-label">Concluídos</span><span class="profile-field-value" id="pDone">0</span></div>
-                <div class="profile-field"><span class="profile-field-label">Cancelados</span><span class="profile-field-value" id="pCancelled">0</span></div>
-            </div>
-            <button class="action-btn btn-cancel" style="width: 100%; padding: 14px; border-radius: 50px; font-size: 0.9rem;" onclick="logout()">Sair da conta</button>
-        </div>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav" id="bottomNav" style="display: none;">
-        <div class="bnav-item active" onclick="switchTab('home')">
-            <div class="bnav-icon">🏠</div>
-            <span>Início</span>
-        </div>
-        <div class="bnav-item" onclick="location.href='booking.html'">
-            <div class="bnav-icon">➕</div>
-            <span>Agendar</span>
-        </div>
-        <div class="bnav-item" onclick="switchTab('profile')">
-            <div class="bnav-icon">👤</div>
-            <span>Perfil</span>
-        </div>
-    </nav>
 
     <script>
-        const SALON_ID = 'demo';
-        let currentUser = null;
+    // ===== Configuration (loaded from URL params or defaults) =====
+    const params = new URLSearchParams(window.location.search);
+    const SALON_ID = params.get('salon') || 'demo';
 
-        // === Toast System ===
-        function showToast(msg, type = 'info') {
-            const c = document.getElementById('toastContainer');
-            const t = document.createElement('div');
-            t.className = `toast toast-${type}`;
-            t.textContent = msg;
-            c.appendChild(t);
-            setTimeout(() => t.remove(), 3200);
+    const DEMO_CONFIG = {
+        name: 'Studio Beleza Premium',
+        address: 'Rua Exemplo, 123 — São Paulo',
+        emoji: '✂️',
+        services: [
+            { id: 1, name: 'Corte Feminino', duration: 45, price: 80, emoji: '✂️' },
+            { id: 2, name: 'Escova Progressiva', duration: 120, price: 180, emoji: '💇‍♀️' },
+            { id: 3, name: 'Coloração', duration: 90, price: 150, emoji: '🎨' },
+            { id: 4, name: 'Corte Masculino', duration: 30, price: 50, emoji: '💈' },
+            { id: 5, name: 'Barba', duration: 20, price: 35, emoji: '🧔' },
+            { id: 6, name: 'Manicure + Pedicure', duration: 60, price: 70, emoji: '💅' },
+            { id: 7, name: 'Hidratação', duration: 45, price: 90, emoji: '💧' },
+        ],
+        professionals: [
+            { id: 1, name: 'Ana Paula', emoji: '👩' },
+            { id: 2, name: 'Carlos', emoji: '👨' },
+            { id: 3, name: 'Juliana', emoji: '👩‍🦰' },
+            { id: 4, name: 'Qualquer', emoji: '🔄' },
+        ],
+        hours: ['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00'],
+        closedDays: [0], // Sunday
+    };
+
+    let config = DEMO_CONFIG;
+    let selection = { service: null, professional: null, date: null, time: null };
+    let currentMonth = new Date();
+
+    // ===== Init =====
+    // BUG#9 FIX + BUG-C1 FIX: aplica TODOS os campos da config salva pelo admin ao config vivo
+    function init() {
+        const saved = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_config`) || 'null');
+        if (saved) {
+            // Sobrescreve apenas os campos que existem na config salva
+            if (saved.name)         config.name         = saved.name;
+            if (saved.address)      config.address      = saved.address;
+            if (saved.services    && Array.isArray(saved.services)    && saved.services.length)    config.services     = saved.services;
+            if (saved.professionals && Array.isArray(saved.professionals) && saved.professionals.length) config.professionals = saved.professionals;
+            if (saved.hours       && Array.isArray(saved.hours)       && saved.hours.length)       config.hours        = saved.hours;
+            if (saved.closedDays  && Array.isArray(saved.closedDays))  config.closedDays   = saved.closedDays;
+        }
+        document.getElementById('salonName').textContent = config.name;
+        document.getElementById('salonAddr').textContent = config.address;
+        document.getElementById('salonLogo').textContent = config.emoji;
+        renderServices();
+    }
+
+    function renderServices() {
+        const container = document.getElementById('serviceList');
+        container.innerHTML = config.services.map(s => `
+            <div class="service-card" data-service-id="${s.id}" onclick="selectService(${s.id})">
+                <div class="service-info">
+                    <h3>${s.emoji} ${s.name}</h3>
+                    <p>${s.duration} min</p>
+                </div>
+                <span class="service-price">R$ ${s.price}</span>
+            </div>
+        `).join('');
+    }
+
+    function selectService(id) {
+        selection.service = config.services.find(s => s.id === id);
+        // BUG#6 FIX: usa data-service-id para toggle sem depender de índice de array
+        document.querySelectorAll('.service-card').forEach(c => {
+            c.classList.toggle('selected', parseInt(c.dataset.serviceId) === id);
+        });
+        setTimeout(() => goStep(1), 200);
+    }
+
+    function renderProfessionals() {
+        const container = document.getElementById('proList');
+        container.innerHTML = config.professionals.map(p => `
+            <div class="pro-card" data-pro-id="${p.id}" onclick="selectPro(${p.id})">
+                <div class="pro-avatar">${p.emoji}</div>
+                <h3>${p.name}</h3>
+            </div>
+        `).join('');
+    }
+
+    function selectPro(id) {
+        selection.professional = config.professionals.find(p => p.id === id);
+        // BUG#6 FIX: usa data-pro-id para toggle sem depender de índice de array
+        document.querySelectorAll('.pro-card').forEach(c => {
+            c.classList.toggle('selected', parseInt(c.dataset.proId) === id);
+        });
+        setTimeout(() => goStep(2), 200);
+    }
+
+    function renderCalendar() {
+        const year = currentMonth.getFullYear();
+        const month = currentMonth.getMonth();
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        document.getElementById('calMonthYear').textContent =
+            new Date(year, month).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const grid = document.getElementById('daysGrid');
+        grid.innerHTML = '';
+
+        for (let i = 0; i < firstDay; i++) {
+            grid.innerHTML += '<div class="day-cell disabled"></div>';
         }
 
-        // === Tab Navigation ===
-        function switchTab(tab) {
-            document.querySelectorAll('.bnav-item').forEach(n => n.classList.remove('active'));
-            const pages = document.querySelectorAll('#mainContent > .container');
-            pages.forEach(p => p.classList.remove('active'));
-            pages.forEach(p => p.style.display = 'none');
+        for (let d = 1; d <= daysInMonth; d++) {
+            const date = new Date(year, month, d);
+            const isPast = date < today;
+            const isClosed = config.closedDays.includes(date.getDay());
+            const isToday = date.getTime() === today.getTime();
+            const isSelected = selection.date && date.getTime() === selection.date.getTime();
 
-            if (tab === 'home') {
-                document.querySelector('.bnav-item:nth-child(1)').classList.add('active');
-                const home = document.querySelector('#mainContent > .container:first-of-type');
-                home.style.display = 'block';
-            } else if (tab === 'profile') {
-                document.querySelector('.bnav-item:nth-child(3)').classList.add('active');
-                document.getElementById('profilePage').style.display = 'block';
-                loadProfile();
+            let cls = 'day-cell';
+            if (isPast || isClosed) cls += ' disabled';
+            if (isToday) cls += ' today';
+            if (isSelected) cls += ' selected';
+
+            grid.innerHTML += `<div class="${cls}" onclick="${isPast || isClosed ? '' : `selectDate(${year},${month},${d})`}">${d}</div>`;
+        }
+    }
+
+    function selectDate(y, m, d) {
+        selection.date = new Date(y, m, d);
+        renderCalendar();
+        renderTimes();
+    }
+
+    function renderTimes() {
+        document.getElementById('timesSection').style.display = 'block';
+        const grid = document.getElementById('timesGrid');
+        const bookedSlots = getBookedSlots();
+        grid.innerHTML = config.hours.map(h => {
+            const booked = bookedSlots.includes(h);
+            return `<div class="time-btn${booked ? ' unavailable' : ''}" onclick="${booked ? '' : `selectTime('${h}')`}">${h}</div>`;
+        }).join('');
+    }
+
+    // BUG#4 FIX: lógica explícita para profissional 'Qualquer' (não depende de condição acidental)
+    function getBookedSlots() {
+        const bookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
+        if (!selection.date) return [];
+        const dateStr = selection.date.toISOString().split('T')[0];
+        const isAny = !selection.professional || selection.professional.name === 'Qualquer';
+        return bookings
+            .filter(b => b.date === dateStr && (isAny || b.proId === selection.professional.id))
+            .map(b => b.time);
+    }
+
+    function selectTime(time) {
+        selection.time = time;
+        document.querySelectorAll('.time-btn').forEach(b => b.classList.toggle('selected', b.textContent === time));
+        setTimeout(() => goStep(3), 200);
+    }
+
+    function goStep(n) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById(`step${n}`).classList.add('active');
+
+        for (let i = 0; i < 5; i++) {
+            const dot = document.getElementById(`dot${i}`);
+            if (dot) {
+                dot.className = 'step-dot';
+                if (i < n) dot.classList.add('done');
+                if (i === n) dot.classList.add('active');
             }
         }
 
-        function checkAuth() {
-            const savedEmail = localStorage.getItem('agendai_client_email');
-            if (savedEmail) {
-                currentUser = { email: savedEmail, name: localStorage.getItem('agendai_client_name') || 'Cliente' };
-                document.getElementById('authOverlay').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                document.getElementById('bottomNav').style.display = 'flex';
-                document.getElementById('userNameDisplay').textContent = currentUser.name.split(' ')[0];
-                document.getElementById('userInitials').textContent = currentUser.name.charAt(0).toUpperCase();
-                loadBookings();
-                updateVIP();
-            }
+        if (n === 1) renderProfessionals();
+        if (n === 2) renderCalendar();
+        if (n === 3) updateSummary();
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateSummary() {
+        document.getElementById('sumService').textContent = selection.service?.name || '';
+        document.getElementById('sumPro').textContent = selection.professional?.name || '';
+        document.getElementById('sumDate').textContent = selection.date?.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' }) || '';
+        document.getElementById('sumTime').textContent = selection.time || '';
+        document.getElementById('sumPrice').textContent = `R$ ${selection.service?.price || 0},00`;
+    }
+
+    function confirmBooking() {
+        const name = document.getElementById('clientName').value.trim();
+        const phone = document.getElementById('clientPhone').value.trim();
+        if (!name || !phone) { alert('Por favor, preencha seu nome e WhatsApp.'); return; }
+
+        const phoneClean = phone.replace(/\D/g, '');
+        if (phoneClean.length < 10) {
+            alert('WhatsApp inválido.');
+            return;
         }
 
-        let loginStep = 1;
-        let isCreatingPassword = false;
+        const btn = document.querySelector('#step3 .btn-primary');
+        if (btn) btn.disabled = true;
 
-        function login() {
-            const email = document.getElementById('loginEmail').value.trim();
-            if (!email) return;
+        const dateStr = selection.date.toISOString().split('T')[0];
+        const existingBookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
+        
+        const booking = {
+            id: Date.now(),
+            service: selection.service.name,
+            serviceId: selection.service.id,
+            price: selection.service.price,
+            pro: selection.professional.name,
+            proId: selection.professional.id,
+            date: dateStr,
+            time: selection.time,
+            clientName: name,
+            clientPhone: phone,
+            clientEmail: document.getElementById('clientEmail').value.trim(),
+            createdAt: new Date().toISOString(),
+            status: 'confirmed'
+        };
 
-            const users = JSON.parse(localStorage.getItem('agendai_users') || '{}');
-            const allBookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
-            
-            if (loginStep === 1) {
-                if (!users[email]) {
-                    const userBooking = allBookings.find(b => b.clientEmail === email);
-                    if (userBooking) {
-                        isCreatingPassword = true;
-                        showToast('Identificamos seus agendamentos! Crie uma senha para proteger sua conta.', 'info');
-                        document.getElementById('passGroup').querySelector('label').textContent = 'Crie uma nova senha';
-                    } else {
-                        showToast('Conta não encontrada. Agende um horário primeiro para se cadastrar.', 'error');
-                        return;
-                    }
-                }
-                document.getElementById('passGroup').style.display = 'block';
-                document.getElementById('loginEmail').readOnly = true;
-                document.getElementById('btnLogin').textContent = isCreatingPassword ? 'Criar Conta' : 'Entrar';
-                loginStep = 2;
-                return;
-            }
+        existingBookings.push(booking);
+        localStorage.setItem(`agendai_${SALON_ID}_bookings`, JSON.stringify(existingBookings));
+        localStorage.setItem(`agendai_new_booking_trigger`, Date.now());
 
-            if (loginStep === 2) {
-                const pass = document.getElementById('loginPassword').value;
-                
-                if (isCreatingPassword) {
-                    if(pass.length < 4) { showToast('A senha deve ter pelo menos 4 caracteres.', 'error'); return; }
-                    const userBooking = allBookings.find(b => b.clientEmail === email);
-                    users[email] = { name: userBooking.clientName, phone: userBooking.clientPhone, pass, createdAt: new Date().toISOString() };
-                    localStorage.setItem('agendai_users', JSON.stringify(users));
-                    showToast('Conta criada com sucesso!', 'success');
-                } else {
-                    if (users[email].pass !== pass) {
-                        showToast('Senha incorreta.', 'error');
-                        return;
-                    }
-                }
-                
-                // Success
-                localStorage.setItem('agendai_client_email', email);
-                localStorage.setItem('agendai_client_name', users[email].name);
-                localStorage.setItem('agendai_client_since', users[email].createdAt);
-                if(!isCreatingPassword) showToast('Login realizado com sucesso!', 'success');
-                checkAuth();
-            }
+        goStep(4);
+        spawnConfetti();
+    }
+
+    function createAccount() {
+        const email = document.getElementById('clientEmail').value.trim();
+        const name = document.getElementById('clientName').value.trim();
+        const phone = document.getElementById('clientPhone').value.trim();
+        const pass = document.getElementById('regPassword').value.trim();
+
+        if (!pass || pass.length < 4) {
+            alert('Por favor, crie uma senha com pelo menos 4 caracteres.');
+            return;
         }
 
-        function logout() {
-            localStorage.removeItem('agendai_client_email');
-            localStorage.removeItem('agendai_client_name');
-            location.reload();
-        }
+        const users = JSON.parse(localStorage.getItem('agendai_users') || '{}');
+        users[email] = { name, phone, pass, createdAt: new Date().toISOString() };
+        localStorage.setItem('agendai_users', JSON.stringify(users));
+        
+        // Auto-login
+        localStorage.setItem('agendai_client_email', email);
+        localStorage.setItem('agendai_client_name', name);
+        localStorage.setItem('agendai_client_since', users[email].createdAt);
 
-        // === VIP Loyalty ===
-        function updateVIP() {
-            if (!currentUser) return;
-            const allBookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
-            const today = new Date().toISOString().split('T')[0];
-            const completed = allBookings.filter(b => b.clientEmail === currentUser.email && b.date < today && b.status !== 'cancelled').length;
-            const visits = completed % 10;
-            const remaining = 10 - visits;
-            document.getElementById('vipCounter').textContent = `${visits}/10`;
-            document.getElementById('vipRemaining').textContent = remaining;
-            document.getElementById('vipProgressFill').style.width = `${visits * 10}%`;
-        }
+        alert('Conta criada com sucesso!');
+        location.href = 'index.html';
+    }
 
-        // === Profile ===
-        function loadProfile() {
-            if (!currentUser) return;
-            document.getElementById('profileAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
-            document.getElementById('profileName').textContent = currentUser.name;
-            document.getElementById('profileEmail').textContent = currentUser.email;
-            document.getElementById('pName').textContent = currentUser.name;
-            document.getElementById('pEmail').textContent = currentUser.email;
-            const since = localStorage.getItem('agendai_client_since');
-            document.getElementById('pSince').textContent = since ? new Date(since).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) : 'Hoje';
-            const allBookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
-            const my = allBookings.filter(b => b.clientEmail === currentUser.email);
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('pTotal').textContent = my.length;
-            document.getElementById('pDone').textContent = my.filter(b => b.date < today && b.status !== 'cancelled').length;
-            document.getElementById('pCancelled').textContent = my.filter(b => b.status === 'cancelled').length;
+    function spawnConfetti() {
+        const colors = ['#8B5CF6', '#06B6D4', '#F472B6', '#10B981', '#FBBF24'];
+        for (let i = 0; i < 50; i++) {
+            const c = document.createElement('div');
+            c.className = 'confetti';
+            c.style.left = Math.random() * 100 + 'vw';
+            c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            c.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            c.style.animationDelay = (Math.random() * 2) + 's';
+            document.body.appendChild(c);
+            setTimeout(() => c.remove(), 5000);
         }
+    }
 
-        // === Bookings ===
-        function loadBookings() {
-            if (!currentUser) return;
-            const nextContainer = document.getElementById('nextBookingContainer');
-            const historyContainer = document.getElementById('historyContainer');
-            nextContainer.innerHTML = `<div class="card" style="padding: 20px;"><div class="skeleton" style="height: 20px; width: 40%; margin-bottom: 12px;"></div><div class="skeleton" style="height: 14px; width: 60%; margin-bottom: 24px;"></div><div style="display: flex; gap: 10px;"><div class="skeleton" style="height: 38px; flex: 1; border-radius: 12px;"></div><div class="skeleton" style="height: 38px; flex: 1; border-radius: 12px;"></div></div></div>`;
-            historyContainer.innerHTML = `<div class="card" style="padding: 16px;"><div class="skeleton" style="height: 30px; width: 100%;"></div></div><div class="card" style="padding: 16px;"><div class="skeleton" style="height: 30px; width: 100%;"></div></div>`;
+    function changeMonth(dir) {
+        currentMonth.setMonth(currentMonth.getMonth() + dir);
+        renderCalendar();
+    }
 
-            setTimeout(() => {
-                const allBookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
-                const myBookings = allBookings.filter(b => b.clientEmail === currentUser.email);
-                const today = new Date().toISOString().split('T')[0];
-                myBookings.sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
-                const futureBookings = myBookings.filter(b => b.date >= today && b.status !== 'cancelled');
-                const pastBookings = myBookings.filter(b => b.date < today || b.status === 'cancelled').reverse();
-                renderNextBooking(futureBookings[0]);
-                renderHistory(pastBookings, futureBookings.slice(1));
-                updateVIP();
-            }, 600);
-        }
-
-        function renderNextBooking(booking) {
-            const container = document.getElementById('nextBookingContainer');
-            if (!booking) {
-                container.innerHTML = `<div class="card empty-state"><div class="empty-icon">📅</div><p>Nenhum agendamento futuro.</p><a href="booking.html" class="new-booking-btn" style="margin-top: 16px;">Agendar agora</a></div>`;
-                return;
-            }
-            const [year, month, day] = booking.date.split('-');
-            const fd = `${day}/${month}/${year}`;
-            container.innerHTML = `
-                <div class="card next-appointment">
-                    <div class="apt-header"><div><div class="apt-service">${booking.service}</div><div class="apt-salon">📍 Studio Beleza Premium</div></div><div class="apt-status status-confirmed">Confirmado</div></div>
-                    <div class="apt-details">
-                        <div class="detail-item"><span class="detail-label">Data</span><span class="detail-value">🗓️ ${fd}</span></div>
-                        <div class="detail-item"><span class="detail-label">Horário</span><span class="detail-value">⏰ ${booking.time}</span></div>
-                        <div class="detail-item"><span class="detail-label">Profissional</span><span class="detail-value">👤 ${booking.pro}</span></div>
-                    </div>
-                    <div class="apt-actions">
-                        <button class="action-btn btn-reschedule" onclick="openRescheduleModal(${booking.id})">Reagendar</button>
-                        <button class="action-btn btn-cancel" onclick="openCancelModal(${booking.id})">Cancelar</button>
-                    </div>
-                </div>`;
-        }
-
-        function renderHistory(past, otherFuture) {
-            const container = document.getElementById('historyContainer');
-            const toRender = [...otherFuture, ...past];
-            if (toRender.length === 0) { container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">Seu histórico está vazio.</p>'; return; }
-            const today = new Date().toISOString().split('T')[0];
-            container.innerHTML = toRender.map(b => {
-                const [year, month, day] = b.date.split('-');
-                const fd = `${day}/${month}/${year}`;
-                const isCancelled = b.status === 'cancelled';
-                const isPast = b.date < today && !isCancelled;
-                const statusClass = isCancelled ? 'status-past' : 'status-confirmed';
-                const statusText = isCancelled ? 'Cancelado' : (isPast ? 'Concluído' : 'Confirmado');
-                const ratings = JSON.parse(localStorage.getItem('agendai_ratings') || '{}');
-                const rated = ratings[b.id];
-                let ratingHTML = '';
-                if (isPast) {
-                    if (rated) {
-                        ratingHTML = `<div class="rated-badge">★ ${rated}/5</div>`;
-                    } else {
-                        ratingHTML = `<div class="star-rating">${[1,2,3,4,5].map(s => `<span class="star" onclick="rateBooking(${b.id},${s})">⭐</span>`).join('')}</div>`;
-                    }
-                }
-                return `<div class="card" style="padding: 16px;"><div class="apt-header" style="margin-bottom: 0;"><div><div style="font-weight: 500;">${b.service}</div><div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">${fd} às ${b.time} • ${b.pro}</div>${ratingHTML}</div><div class="apt-status ${statusClass}" style="font-size: 0.7rem;">${statusText}</div></div></div>`;
-            }).join('');
-        }
-
-        // === Star Rating ===
-        function rateBooking(id, stars) {
-            const ratings = JSON.parse(localStorage.getItem('agendai_ratings') || '{}');
-            ratings[id] = stars;
-            localStorage.setItem('agendai_ratings', JSON.stringify(ratings));
-            showToast(`Avaliação de ${stars}★ salva! Obrigado!`, 'success');
-            loadBookings();
-        }
-
-        // === Cancel Modal ===
-        function openCancelModal(id) {
-            const allBookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
-            const booking = allBookings.find(b => b.id === id);
-            if (booking) {
-                document.getElementById('cancelBookingId').value = id;
-                document.getElementById('cancelServiceName').textContent = booking.service;
-                document.getElementById('cancelOverlay').style.display = 'flex';
-            }
-        }
-        function closeCancelModal() { document.getElementById('cancelOverlay').style.display = 'none'; }
-        function confirmCancel() {
-            const id = parseInt(document.getElementById('cancelBookingId').value);
-            let allBookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
-            allBookings = allBookings.map(b => b.id === id ? {...b, status: 'cancelled'} : b);
-            localStorage.setItem(`agendai_${SALON_ID}_bookings`, JSON.stringify(allBookings));
-            closeCancelModal();
-            showToast('Agendamento cancelado.', 'error');
-            loadBookings();
-        }
-
-        // === Reschedule ===
-        function openRescheduleModal(id) {
-            const allBookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
-            const booking = allBookings.find(b => b.id === id);
-            if(booking) {
-                document.getElementById('rescheduleBookingId').value = id;
-                document.getElementById('rescheduleService').textContent = booking.service;
-                document.getElementById('rescheduleDate').value = booking.date;
-                document.getElementById('rescheduleTime').value = booking.time;
-                document.getElementById('rescheduleOverlay').style.display = 'flex';
-            }
-        }
-        function closeRescheduleModal() { document.getElementById('rescheduleOverlay').style.display = 'none'; }
-        function confirmReschedule() {
-            const id = parseInt(document.getElementById('rescheduleBookingId').value);
-            const newDate = document.getElementById('rescheduleDate').value;
-            const newTime = document.getElementById('rescheduleTime').value;
-            if(!newDate || !newTime) { showToast('Selecione data e horário.', 'error'); return; }
-            let allBookings = JSON.parse(localStorage.getItem(`agendai_${SALON_ID}_bookings`) || '[]');
-            allBookings = allBookings.map(b => b.id === id ? {...b, date: newDate, time: newTime} : b);
-            localStorage.setItem(`agendai_${SALON_ID}_bookings`, JSON.stringify(allBookings));
-            closeRescheduleModal();
-            showToast('Agendamento remarcado com sucesso!', 'success');
-            loadBookings();
-        }
-
-        // Initialize
-        checkAuth();
+    init();
     </script>
 </body>
 </html>
